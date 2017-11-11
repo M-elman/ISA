@@ -5,7 +5,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
-  <link rel="stylesheet" href="https://pingendo.com/assets/bootstrap/bootstrap-4.0.0-beta.1.css" type="text/css"> </head>
+  <link rel="stylesheet" href="https://pingendo.com/assets/bootstrap/bootstrap-4.0.0-beta.1.css" type="text/css">
+  <script src="/src/CodiceFiscale.cadastralCodes.js"></script>
+  <script src="/src/CodiceFiscale.js"></script>
+  <script src="/src/utility.js"></script>
+
+</head>
 
 <body>
   <nav class="navbar navbar-expand-md bg-primary navbar-dark">
@@ -36,19 +41,53 @@
   <div class="py-5 text-white opaque-overlay bg-dark">
     <div class="container">
       <div class="row">
-        <div class="col-md-6" id="Registration_form">
+        <div class="col-md-12" id="Registration_form">
           <h1 class="text-gray-dark">Registration form</h1>
           <p class="lead mb-4">Complete all the fields below to sign up for the platform</p>
-          <form class="" method="post" action="https://formspree.io/">
-            <div class="form-group"> <label>Username</label>
-              <input type="email" name="email" class="form-control" placeholder="Enter username"> </div>
-            <div class="form-group"> <label>Password</label>
-              <input type="password" name="password" class="form-control" placeholder="Password"> </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <form class="" method="post" action="/signup">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group"> <label>Username</label>
+                  <input type="text" name="username" id="username" class="form-control" required="" onblur=checkUsername()> </div>
+                <div class="form-group"> <label>Password</label>
+                  <input type="password" name="password" id="password" class="form-control" required="" onblur="checkPwdStrenght()"> </div>
+                <div class="form-group"> <label>Confirm password</label>
+                  <input type="password" name="confirm_password" id="confirm_password" class="form-control" required="" onblur="comparePwds()"> </div>
+                <div class="form-group"> <label>E-mail</label>
+                  <input type="email" name="email" id="email" class="form-control" required=""> </div>
+              </div>
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group"> <label class="">Name</label>
+                      <input type="text" name="name" id="name" class="form-control" placeholder="Name" required=""> </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group my-2"> <label></label>
+                      <input type="text" name="surname" id="surname" class="form-control" placeholder="Surname" required=""> </div>
+                  </div>
+                </div>
+                <div class="form-group"> <label>Birthdate</label>
+                  <input type="date" name="birthdate" id="birthdate" class="form-control" required="" onblur="checkDate()"> </div>
+                <div class="form-group"> <label>Town of birth </label>
+                  <input type="text" name="birthTown" id="birthTown" class="form-control" required=""> </div>
+                <div class="form-group"> <label>Gender</label> <select name="gender" id="gender" class="form-control" required="">
+  									<option value="M">M</option>
+  										<option value="F">F</option>
+									</select> </div>
+                <div class="form-group"> <label>Tax code </label>
+                  <input type="text" name="taxCode" id="taxCode" class="form-control" required="" onblur= "checkTaxCode()"> </div>
+              </div>
+            </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
           </form>
         </div>
-        <div class="col-md-6"></div>
       </div>
+      
     </div>
   </div>
   <div class="py-5 text-white bg-light">

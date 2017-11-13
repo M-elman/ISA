@@ -44,6 +44,36 @@ xhttp.setRequestHeader("Content-Type", "application/json");
 xhttp.send(JSON.stringify({username: document.getElementById("username").value}));
 };
 
+function checkBirthPlace(blurredElement){
+    
+    if (blurredElement=="birthTown" && (document.getElementById("birthProvince").value=="" || document.getElementById("birthProvince").value==undefined)){
+        return;
+    }
+    console.log("controllando")
+    
+    var xhttp = new XMLHttpRequest();
+    
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 404) {
+        var json_res=JSON.parse(this.response)
+
+        if (json_res.bprov_err!=null) {
+            document.getElementById("birthProvince").setCustomValidity(json_res.bprov_err)
+        }
+        if (json_res.btow_err!=null) {
+            document.getElementById("birthTown").setCustomValidity(json_res.btow_err)
+        }
+        
+    }
+    };
+    xhttp.open("POST", "/birthplace", true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify({birthplace_provincia: document.getElementById("birthProvince").value, birthplace: document.getElementById("birthTown").value}));
+    
+
+}
+
+
 function checkTaxCode() {
     
     var generality = {
@@ -64,6 +94,7 @@ function checkTaxCode() {
 }
 
 function computeTaxCode() {
+    resetFieldError("taxCode");
     if (document.getElementById("name").value != null && document.getElementById("name").value !="" &&
        document.getElementById("surname").value != null && document.getElementById("surname").value !="" &&
        document.getElementById("gender").value != null && document.getElementById("gender").value !="" &&
@@ -88,3 +119,9 @@ function computeTaxCode() {
     
     
 }
+
+//to call whenever a field is focused
+function resetFieldError(id){
+    document.getElementById(id).setCustomValidity("");    
+}
+

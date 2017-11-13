@@ -3,6 +3,8 @@ var router = express.Router();
 var User = require('../models/userSchema');
 var path = require('path');
 var nodemailer = require('nodemailer');
+const catastalCodes = require('../models/catastal-codes.json')
+
 
 // GET route for reading data
 router.get('/', function (req, res, next) {
@@ -43,6 +45,7 @@ var userData = {
       surname: req.body.surname,
       birthdate: req.body.birthdate,
       birthTown: req.body.birthTown,
+      birthProvince: req.body.birthProvince,
       gender: req.body.gender,
       taxCode: req.body.taxCode,
     }
@@ -100,6 +103,45 @@ User.findOne({ username: req.body.username })
     
 })
 })
+
+router.post('/birthplace', function (req, res, next) {
+    
+    if (req.body.birthplace_provincia=="" && req.body.birthplace==""){
+        res.setHeader('content-type', 'application/json');
+        res.status(404).send(JSON.stringify({bprov_err: "This field is required", btow_err: "This field is required"}))
+    }
+    else if (req.body.birthplace_provincia!="" && req.body.birthplace==""){
+        res.setHeader('content-type', 'application/json');
+        res.status(404).send(JSON.stringify({bprov_err: null, btow_err: "This field is required"}))
+    }
+    else if (req.body.birthplace_provincia=="" && req.body.birthplace!=""){
+        res.setHeader('content-type', 'application/json');
+        res.status(404).send(JSON.stringify({bprov_err: "This field is required", btow_err: null}))
+    }
+    else{
+        var found=false;
+        if(catastalCodes[req.body.birthplace_provincia]==undefined){
+                res.setHeader('content-type', 'application/json');
+                res.status(404).send(JSON.stringify({bprov_err: "Choose a valid province", btow_err: null}))  
+        }
+        else{
+        for (var i = catastalCodes[req.body.birthplace_provincia].length - 1; i >= 0; i--) {
+        var comune = catastalCodes[req.body.birthplace_provincia][i];
+        if(comune[0] == req.body.birthplace.trim().toUpperCase()) found=true;
+        }
+        if (found==false) {
+                res.setHeader('content-type', 'application/json');
+                res.status(404).send(JSON.stringify({bprov_err: null, btow_err: "Choose a valid town"}))
+        }
+        else {
+                res.status(200).send(JSON.stringify({bprov_err: null, btow_err: null}))
+        }
+        }
+        
+    }
+    
+})
+
 
 
 // GET route after registering

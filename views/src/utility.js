@@ -49,8 +49,7 @@ function checkBirthPlace(blurredElement){
     if (blurredElement=="birthTown" && (document.getElementById("birthProvince").value=="" || document.getElementById("birthProvince").value==undefined)){
         return;
     }
-    console.log("controllando")
-    
+  
     var xhttp = new XMLHttpRequest();
     
     xhttp.onreadystatechange = function() {

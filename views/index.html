@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
   <link rel="stylesheet" href="https://pingendo.com/assets/bootstrap/bootstrap-4.0.0-beta.1.css" type="text/css">
+  <link rel="stylesheet" href="changedCSS.css" type="text/css">
   <script src="/src/codice.fiscale.js"></script>
   <script src="/src/utility.js"></script>
 </head>
@@ -22,7 +23,7 @@
       </div>
     </div>
   </nav>
-  <div class="py-5 gradient-overlay" style="background-image: url(&quot;https://pingendo.github.io/templates/sections/assets/cover_event.jpg&quot;);">
+  <div class="py-5 gradient-overlay bg-primary">
     <div class="container py-5">
       <div class="row">
         <div class="col-md-3 text-white">
@@ -31,7 +32,7 @@
           <h1 class="mb-4 display-4">Fast Alert Health Monitoring</h1>
           <p class="lead mb-5">Get a fluid web page working on all devices with the Bootstrap 4 grid system.&nbsp;
             <br> </p>
-          <a href="#Registration_form" class="btn btn-lg mx-1 btn-secondary">Sign up</a>
+          <a href="#Registration_form" class="btn btn-lg mx-1 btn-light"><b>Sign up</b></a>
         </div>
       </div>
     </div>
@@ -50,19 +51,19 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group"> <label>Username</label>
-                  <input type="text" name="username" id="username" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkUsername()"> </div>
+                  <input type="text" name="username" id="username" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkUsername()"> <label id="username_err" style="color:red; visibility:hidden">This username already exists</label> </div>
                 <div class="form-group"> <label>Password</label>
-                  <input type="password" name="password" id="password" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkPwdStrenght()"> </div>
+                  <input type="password" name="password" id="password" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkPwdStrenght()"> <label id="password_err" style="color:red;visibility:hidden">Password has to be at least 8 characters long</label></div>
                 <div class="form-group"> <label>Confirm password</label>
-                  <input type="password" name="confirm_password" id="confirm_password" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="comparePwds()"> </div>
+                  <input type="password" name="confirm_password" id="confirm_password" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="comparePwds()"> <label id="confirm_password_err" style="color:red;visibility:hidden">Passwords don't match</label></div>
                 <div class="form-group"> <label>E-mail</label>
-                  <input type="email" name="email" id="email" class="form-control" required="" onfocus="resetFieldError(this.id);"> </div>
+                  <input type="email" name="email" id="email" class="form-control" required="" onfocus="resetFieldError(this.id);"> <label id="email_err" style="color:red;visibility:hidden">Insert email address in the example@example.example format</label> </div>
               </div>
               <div class="col-md-6">
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group"> <label class="">Name</label>
-                      <input type="text" name="name" id="name" class="form-control" placeholder="Name" required=""> </div>
+                      <input type="text" name="name" id="name" class="form-control" placeholder="Name" required=""> <label id="name_err" style="color:red; visibility:hidden">ERRORE</label> </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group my-2"> <label></label>
@@ -72,21 +73,21 @@
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group"> <label>Town of birth </label>
-                      <input type="text" name="birthTown" id="birthTown" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkBirthPlace(this.id);"> </div>
+                      <input type="text" name="birthTown" id="birthTown" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkBirthPlace(this.id);"> <label id="birthTown_err" style="color:red;visibility:hidden">The town doesn't exist</label></div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group"> <label>Province</label>
-                      <input type="text" name="birthProvince" id="birthProvince" maxlength="2" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkBirthPlace(this.id);"> </div>
+                      <input type="text" name="birthProvince" id="birthProvince" maxlength="2" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkBirthPlace(this.id);"> <label id="birthProvince_err" style="color:red;visibility:hidden">The province doesn't exist</label> </div>
                   </div>
                 </div>
                 <div class="form-group"> <label>Birthdate (use the format "yyyy-mm-dd")</label>
-                  <input type="text" placeholder="yyyy-mm-dd" name="birthdate" id="birthdate" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkDate()"> </div>
+                  <input type="text" placeholder="yyyy-mm-dd" name="birthdate" id="birthdate" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkDate()"> <label id="birthdate_err" style="color:red;visibility:hidden">Please use the format yyyy-mm-dd</label></div>
                 <div class="form-group"> <label>Gender</label> <select name="gender" id="gender" class="form-control" required="">
   									<option value="M">M</option>
   										<option value="F">F</option>
 									</select> </div>
                 <div class="form-group"> <label>Tax code </label>
-                  <input type="text" name="taxCode" id="taxCode" class="form-control" required="" onfocus="computeTaxCode();" onblur="checkTaxCode()"> </div>
+                  <input type="text" name="taxCode" id="taxCode" class="form-control" required="" onfocus="computeTaxCode();" onblur="checkTaxCode()"><label id="taxCode_err" style="color:red;visibility:hidden">The field is incorrect</label> </div>
               </div>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -160,6 +161,23 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#LoginModal">Back</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Home</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="SuccessfulRegistrationModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">SUCCESS!</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="window.location.reload()"> <span aria-hidden="true">×</span> </button>
+        </div>
+        <div class="modal-body">
+          <p>The sign up procedure has been terminated: check inbox the confirmation e-mail.
+            <br>Press <i>Enter</i> button to log into the platform or simply close the modal.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal" data-target="#LoginModal" data-toggle="modal">Enter</button>
         </div>
       </div>
     </div>

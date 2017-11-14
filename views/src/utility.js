@@ -3,13 +3,14 @@ function comparePwds()  {
         document.getElementById("confirm_password").innerHTML="";
         //document.getElementById("confirm_password").setCustomValidity("Passwords don't match");
         showError("confirm_password_err");
+        return false;
     }
 };
 function checkPwdStrenght()  {
     if(document.getElementById("password").value.length < 8){
         //document.getElementById("password").setCustomValidity("Password has to be at least 8 characters long");
         showError("password_err");
-
+        return false;
     }
 };
 
@@ -20,6 +21,7 @@ function checkDate()  {
         document.getElementById("birthdate_err").innerHTML="Please use the format yyyy-mm-dd";
         showError("birthdate_err");
         document.getElementById("birthdate").value="";
+        return false;
     }
     else{
     if(isNaN(Date.parse(document.getElementById("birthdate").value))==true) {
@@ -27,6 +29,7 @@ function checkDate()  {
         document.getElementById("birthdate_err").innerHTML="Please input a valid date";
         showError("birthdate_err");
         document.getElementById("birthdate").value="";
+        return false;
     }
     else{
         var birthday= new Date(document.getElementById("birthdate").value);
@@ -35,6 +38,7 @@ function checkDate()  {
         document.getElementById("birthdate_err").innerHTML="Please select a date between 1900-01-01 and today";
         showError("birthdate_err");
         document.getElementById("birthdate").value="";
+        return false;
     }
     }
     }
@@ -46,7 +50,8 @@ var xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function() {
   if (this.readyState == 4 && this.status == 449) {
     //document.getElementById("username").setCustomValidity("This username already exists");
-    showError("username_err");  
+    showError("username_err");
+    return false;
 }
 };
 xhttp.open("POST", "/username", true);
@@ -76,6 +81,7 @@ function checkBirthPlace(blurredElement){
             document.getElementById("birthTown_err").innerHTML=json_res.btow_err;
             showError("birthTown_err");
         }
+        return false;
         
     }
     };
@@ -102,6 +108,7 @@ function checkTaxCode() {
    if(CodiceFiscale.compute(generality) !== document.getElementById("taxCode").value.toUpperCase()){
         showError("taxcode_err");
         document.getElementById("taxCode").value="";
+        return false;
     }
     
 }
@@ -132,6 +139,21 @@ function computeTaxCode() {
     
     
 }
+
+function checkRegistration(){
+    if(checkUsername()==false || checkPwdStrenght()==false || comparePwds()==false || checkBirthPlace("birthProvince")==false || checkDate()==false || checkTaxCode()==false){
+        return false;
+    }
+    return true;
+
+}
+
+
+$(document).ready(function () {
+  //your code here
+    $('form#reg_form').submit(checkRegistration());
+});
+
 
 //to call whenever a field is focused
 function resetFieldError(id){

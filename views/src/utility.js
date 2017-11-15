@@ -18,7 +18,7 @@ function checkDate()  {
     var formatRegExp=/\d{4}-\d{2}-\d{2}/; /*slash indica l'inizio e la fine della regexp, \d indica un digit, ripetuto 4 o due volte a seconda del numero indicato fra graffe. Tale espressione regolare controlla solo il formato desiderato della data, mentre la validità della stessa viene controllata dai metodi seguenti*/
     if (formatRegExp.test(document.getElementById("birthdate").value)==false){
         //document.getElementById("birthdate").setCustomValidity("Please use the format yyyy-mm-dd");
-        document.getElementById("birthdate_err").innerHTML="Please use the format yyyy-mm-dd";
+        document.getElementById("birthdate_err").innerHTML="<b>Please enter a valid date - </b> You should use the format yyyy-mm-dd";
         showError("birthdate_err");
         document.getElementById("birthdate").value="";
         return false;
@@ -26,7 +26,7 @@ function checkDate()  {
     else{
     if(isNaN(Date.parse(document.getElementById("birthdate").value))==true) {
         //document.getElementById("birthdate").setCustomValidity("Please input a valid date");
-        document.getElementById("birthdate_err").innerHTML="Please input a valid date";
+        document.getElementById("birthdate_err").innerHTML="<b>Please enter a valid date - </b> You should use the format yyyy-mm-dd";
         showError("birthdate_err");
         document.getElementById("birthdate").value="";
         return false;
@@ -35,7 +35,7 @@ function checkDate()  {
         var birthday= new Date(document.getElementById("birthdate").value);
         if(birthday < new Date("1900-01-01") || birthday > new Date() ){
         //document.getElementById("birthdate").setCustomValidity("Please select a date between 1900-01-01 and today");
-        document.getElementById("birthdate_err").innerHTML="Please select a date between 1900-01-01 and today";
+        document.getElementById("birthdate_err").innerHTML="<b>Please enter a valid date - </b> You should select a date between 1900-01-01 and today";
         showError("birthdate_err");
         document.getElementById("birthdate").value="";
         return false;
@@ -51,13 +51,13 @@ xhttp.onreadystatechange = function() {
   if (this.readyState == 4 && this.status == 449) {
     //document.getElementById("username").setCustomValidity("This username already exists");
     showError("username_err");
-    return false;
 }
 };
 xhttp.open("POST", "/username", true);
 xhttp.setRequestHeader("Content-Type", "application/json");
 xhttp.send(JSON.stringify({username: document.getElementById("username").value}));
 };
+
 
 function checkBirthPlace(blurredElement){
     
@@ -81,7 +81,6 @@ function checkBirthPlace(blurredElement){
             document.getElementById("birthTown_err").innerHTML=json_res.btow_err;
             showError("birthTown_err");
         }
-        return false;
         
     }
     };
@@ -106,8 +105,7 @@ function checkTaxCode() {
     birthplace_provincia: document.getElementById("birthProvince").value.toUpperCase()
 };
    if(CodiceFiscale.compute(generality) !== document.getElementById("taxCode").value.toUpperCase()){
-        showError("taxcode_err");
-        document.getElementById("taxCode").value="";
+        showError("taxCode_err");
         return false;
     }
     
@@ -141,18 +139,42 @@ function computeTaxCode() {
 }
 
 function checkRegistration(){
-    if(checkUsername()==false || checkPwdStrenght()==false || comparePwds()==false || checkBirthPlace("birthProvince")==false || checkDate()==false || checkTaxCode()==false){
-        return false;
-    }
-    return true;
-
+    
+    verifyUsername(
+        verifyBirthPlace(            
+            function(){
+            
+                if(checkPwdStrenght()==false || comparePwds()==false || checkDate()==false || checkTaxCode()==false){
+                console.log("f")
+                return false;
+                }
+                else {
+                    console.log("t")
+                    return true;
+                }            
+            }
+            , function(data){
+                console.log("error from place" + data);
+            })
+        
+        , function(data){
+            console.log("ERROR from user" + data);
+        });     
 }
 
 
-$(document).ready(function () {
-  //your code here
-    $('form#reg_form').submit(checkRegistration());
-});
+/*$("#reg_form").on("submit", function() {
+    if (checkRegistration()) {
+        console.log("OKKKK")
+
+        //$("#reg_form").submit();
+    }
+    else {
+        console.log("Error")
+    }
+});*/
+
+
 
 
 //to call whenever a field is focused
@@ -167,6 +189,29 @@ function showError(id){
     document.getElementById(id).style.visibility="";   
 }
 
-
  
 
+function verifyUsername(success,error){
+       console.log("start check complete");
+ $.ajax({
+            type: "POST",
+            url: '/username',
+            contentType:'application/json',
+            data: JSON.stringify({username: document.getElementById("username").value}),
+            done:/*success*/ alert("OK"),
+            fail: /*error*/ alert("NO")
+    });
+}
+
+
+function verifyBirthPlace(success,error){
+    console.log("pl check complete");
+ $.ajax({
+            type: "POST",
+            url: '/birthplace',
+            contentType:'application/json',
+            data: JSON.stringify({birthplace_provincia: document.getElementById("birthProvince").value, birthplace: document.getElementById("birthTown").value}),
+            done:success,
+            fail: error
+    });
+}

@@ -138,7 +138,52 @@ function computeTaxCode() {
     
 }
 
+
+
 function checkRegistration(){
+    
+    var isUsernameGood = new Promise(
+        function(resolve, reject) {
+            console.log("Starting username check");
+            $.ajax({
+                       type: "POST",
+                       url: '/username',
+                       contentType:'application/json',
+                       data: JSON.stringify({username: document.getElementById("username").value}),
+                       done: resolve("Username OK"), /*function(data, textStatus, xhr) {resolve(xhr.status)},*/
+                       fail: reject("Bad username") /*function(data, textStatus, xhr) {reject(xhr.status)}*/
+            });
+        }
+    );
+
+    var isPasswordGood = new Promise(
+        function(resolve, reject) {
+            console.log("Starting password check");
+            $.ajax({
+                type: "POST",
+                url: '/birthplace',
+                contentType:'application/json',
+                data: JSON.stringify({birthplace_provincia: document.getElementById("birthProvince").value, birthplace: document.getElementById("birthTown").value}),
+                done: resolve("Password (and username) OK"),
+                fail: reject("Bad password")
+            });
+        }
+    );
+
+    isUsernameGood
+        .then(isPasswordGood)
+        .then(function(fulfill_msg) {
+            console.log(fulfill_msg)
+            }
+        )
+        .catch(function(error_msg) {
+            console.log(error_msg)  
+            }
+        );
+
+}
+
+/* function checkRegistration(){
     
     verifyUsername(
         verifyBirthPlace(            
@@ -160,7 +205,7 @@ function checkRegistration(){
         , function(data){
             console.log("ERROR from user" + data);
         });     
-}
+} */
 
 
 /*$("#reg_form").on("submit", function() {

@@ -99,7 +99,10 @@ User.findOne({ username: req.body.username })
         return next(error);
       }  else if (user) {
           res.status(449).send("The username you chose already exists.")
+      } else {
+        res.status(200).send("The username you provided is fresh.")
       }
+
     
 })
 })

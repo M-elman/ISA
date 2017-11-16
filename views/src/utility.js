@@ -142,85 +142,71 @@ function computeTaxCode() {
 
 function checkRegistration(){
     
+
+
     var isUsernameGood = new Promise(
         function(resolve, reject) {
-            console.log("Starting username check");
             $.ajax({
                        type: "POST",
                        url: '/username',
                        contentType:'application/json',
-                       data: JSON.stringify({username: document.getElementById("username").value}),
-                       done: resolve("Username OK"), /*function(data, textStatus, xhr) {resolve(xhr.status)},*/
-                       fail: reject("Bad username") /*function(data, textStatus, xhr) {reject(xhr.status)}*/
+                       data: JSON.stringify({username: document.getElementById("username").value})
+            })
+            .done(function(data, textStatus, xhr){
+                //console.log(data); /*prints the message provided by the server*/
+                //console.log(textStatus); /*prints "success"*/
+                //console.log (xhr); /*prints xhr object*/
+                //console.log(xhr.status); /*prints success code (e.g. 200)*/
+                resolve(xhr.status);
+            })
+            .fail(function(textStatus){
+                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                //console.log(textStatus);  /*prints the Object*/
+                reject(textStatus.responseText);
             });
         }
     );
 
-    var isPasswordGood = new Promise(
+    var isBirthPlaceGood = new Promise(
         function(resolve, reject) {
-            console.log("Starting password check");
             $.ajax({
                 type: "POST",
                 url: '/birthplace',
                 contentType:'application/json',
                 data: JSON.stringify({birthplace_provincia: document.getElementById("birthProvince").value, birthplace: document.getElementById("birthTown").value}),
-                done: resolve("Password (and username) OK"),
-                fail: reject("Bad password")
+            })
+            .done(function(data, textStatus, xhr){
+                //console.log(data); /*prints the message provided by the server*/
+                //console.log(textStatus); /*prints "success"*/
+                //console.log (xhr); /*prints xhr object*/
+                //console.log(xhr.status); /*prints success code (e.g. 200)*/
+                resolve(xhr.status);
+            })
+            .fail(function(textStatus){
+                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                //console.log(textStatus);  /*prints the Object*/
+                reject("Incorrect birthplace");
             });
         }
     );
 
-    isUsernameGood
-        .then(isPasswordGood)
+        Promise.all([isUsernameGood, isBirthPlaceGood])
         .then(function(fulfill_msg) {
-            console.log(fulfill_msg)
+
+            if(checkPwdStrenght()==false || comparePwds()==false || checkDate()==false || checkTaxCode()==false){
+                console.log("There is an error in the form")
             }
-        )
+            else {
+                console.log("Registering user...")
+                document.getElementById("reg_form").submit(); 
+            }
+        })
         .catch(function(error_msg) {
             console.log(error_msg)  
             }
         );
 
 }
-
-/* function checkRegistration(){
-    
-    verifyUsername(
-        verifyBirthPlace(            
-            function(){
-            
-                if(checkPwdStrenght()==false || comparePwds()==false || checkDate()==false || checkTaxCode()==false){
-                console.log("f")
-                return false;
-                }
-                else {
-                    console.log("t")
-                    return true;
-                }            
-            }
-            , function(data){
-                console.log("error from place" + data);
-            })
-        
-        , function(data){
-            console.log("ERROR from user" + data);
-        });     
-} */
-
-
-/*$("#reg_form").on("submit", function() {
-    if (checkRegistration()) {
-        console.log("OKKKK")
-
-        //$("#reg_form").submit();
-    }
-    else {
-        console.log("Error")
-    }
-});*/
-
-
-
 
 //to call whenever a field is focused
 function resetFieldError(id){
@@ -232,31 +218,4 @@ function resetFieldError(id){
 //to call in case of error
 function showError(id){
     document.getElementById(id).style.visibility="";   
-}
-
- 
-
-function verifyUsername(success,error){
-       console.log("start check complete");
- $.ajax({
-            type: "POST",
-            url: '/username',
-            contentType:'application/json',
-            data: JSON.stringify({username: document.getElementById("username").value}),
-            done:/*success*/ alert("OK"),
-            fail: /*error*/ alert("NO")
-    });
-}
-
-
-function verifyBirthPlace(success,error){
-    console.log("pl check complete");
- $.ajax({
-            type: "POST",
-            url: '/birthplace',
-            contentType:'application/json',
-            data: JSON.stringify({birthplace_provincia: document.getElementById("birthProvince").value, birthplace: document.getElementById("birthTown").value}),
-            done:success,
-            fail: error
-    });
 }

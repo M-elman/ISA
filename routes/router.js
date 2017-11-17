@@ -111,21 +111,21 @@ router.post('/birthplace', function (req, res, next) {
     
     if (req.body.birthplace_provincia=="" && req.body.birthplace==""){
         res.setHeader('content-type', 'application/json');
-        res.status(404).send(JSON.stringify({bprov_err: "This field is required", btow_err: "This field is required"}))
+        res.status(404).send(JSON.stringify({bprov_err: "This field cannot be left blank", btow_err: "This field cannot be left blank"}))
     }
     else if (req.body.birthplace_provincia!="" && req.body.birthplace==""){
         res.setHeader('content-type', 'application/json');
-        res.status(404).send(JSON.stringify({bprov_err: null, btow_err: "This field is required"}))
+        res.status(404).send(JSON.stringify({bprov_err: null, btow_err: "This field cannot be left blank"}))
     }
     else if (req.body.birthplace_provincia=="" && req.body.birthplace!=""){
         res.setHeader('content-type', 'application/json');
-        res.status(404).send(JSON.stringify({bprov_err: "This field is required", btow_err: null}))
+        res.status(404).send(JSON.stringify({bprov_err: "This field cannot be left blank", btow_err: null}))
     }
     else{
         var found=false;
         if(catastalCodes[req.body.birthplace_provincia]==undefined){
                 res.setHeader('content-type', 'application/json');
-                res.status(404).send(JSON.stringify({bprov_err: "Choose a valid province", btow_err: null}))  
+                res.status(404).send(JSON.stringify({bprov_err: "We have not found it in our database", btow_err: null}))  
         }
         else{
         for (var i = catastalCodes[req.body.birthplace_provincia].length - 1; i >= 0; i--) {
@@ -134,7 +134,7 @@ router.post('/birthplace', function (req, res, next) {
         }
         if (found==false) {
                 res.setHeader('content-type', 'application/json');
-                res.status(404).send(JSON.stringify({bprov_err: null, btow_err: "Choose a valid town"}))
+                res.status(404).send(JSON.stringify({bprov_err: null, btow_err: "We have not found it in our database"}))
         }
         else {
                 res.status(200).send(JSON.stringify({bprov_err: null, btow_err: null}))

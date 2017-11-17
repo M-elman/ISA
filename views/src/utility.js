@@ -58,6 +58,13 @@ xhttp.setRequestHeader("Content-Type", "application/json");
 xhttp.send(JSON.stringify({username: document.getElementById("username").value}));
 };
 
+function checkMail() {
+    console.log(document.getElementById("email").checkValidity())
+    if (document.getElementById("email").checkValidity()==false) {
+        showError("email_err");
+    }
+}
+
 
 function checkBirthPlace(blurredElement){
     
@@ -73,12 +80,12 @@ function checkBirthPlace(blurredElement){
 
         if (json_res.bprov_err!=null) {
             //document.getElementById("birthProvince").setCustomValidity(json_res.bprov_err)
-            document.getElementById("birthProvince_err").innerHTML=json_res.bprov_err;
+            document.getElementById("birthProvince_err").innerHTML="<b>Please enter a valid province - </b> " + json_res.bprov_err;
             showError("birthProvince_err");
         }
         if (json_res.btow_err!=null) {
             //document.getElementById("birthTown").setCustomValidity(json_res.btow_err)
-            document.getElementById("birthTown_err").innerHTML=json_res.btow_err;
+            document.getElementById("birthTown_err").innerHTML="<b>Please enter a valid town - </b> " + json_res.btow_err;
             showError("birthTown_err");
         }
         

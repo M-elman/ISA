@@ -226,3 +226,12 @@ function resetFieldError(id){
 function showError(id){
     document.getElementById(id).style.visibility="";   
 }
+
+function logout(){
+    $.ajax({
+        type: "GET",
+        url: '/logout',
+        async: false,
+    })
+
+}

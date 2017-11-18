@@ -15,8 +15,6 @@ router.get('/', function (req, res, next) {
 //POST route for logging in
 router.post('/login', function (req, res, next) {
 if (req.body.logusername && req.body.logpassword) {
-    console.log(req.body.logusername)
-    console.log(req.body.logpassword)
 
     User.authenticate(req.body.logusername, req.body.logpassword, function (error, user) {
       if (error || !user) {

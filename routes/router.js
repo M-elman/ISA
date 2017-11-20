@@ -34,6 +34,27 @@ if (req.body.logusername && req.body.logpassword) {
   }
 })
 
+//POST route for logging in an administrator
+router.post('/admin_login', function (req, res, next) {
+  if (req.body.adlogusername && req.body.adlogpassword) {
+  
+      Admin.authenticate(req.body.adlogusername, req.body.adlogpassword, function (error, admin) {
+        if (error || !admin) {
+          var err = new Error('Wrong email or password.');
+          err.status = 401;
+          return next(err);
+        } else {
+          req.session.userId = admin._id;
+          return /*res.redirect('/clientPage');*/ res.send("OK");
+        }
+      });
+    } else {
+      var err = new Error('All fields required.');
+      err.status = 400;
+      return next(err);
+    }
+  })
+
 //POST route for adding a new user
 router.post('/signup', function (req, res, next) {
 var userData = {

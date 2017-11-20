@@ -59,7 +59,6 @@ xhttp.send(JSON.stringify({username: document.getElementById("username").value})
 };
 
 function checkMail() {
-    console.log(document.getElementById("email").checkValidity())
     if (document.getElementById("email").checkValidity()==false) {
         showError("email_err");
     }
@@ -225,13 +224,4 @@ function resetFieldError(id){
 //to call in case of error
 function showError(id){
     document.getElementById(id).style.visibility="";   
-}
-
-function logout(){
-    $.ajax({
-        type: "GET",
-        url: '/logout',
-        async: false,
-    })
-
 }

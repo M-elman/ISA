@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/userSchema');
+var Admin = require('../models/adminSchema');
 var path = require('path');
 var nodemailer = require('nodemailer');
 const catastalCodes = require('../models/catastal-codes.json')
@@ -163,7 +164,7 @@ router.get('/clientPage', function (req, res, next) {
     });
 });
 
-// GET for logout logout
+// GET for logout
 router.get('/logout', function (req, res, next) {
   if (req.session) {
     // delete session object

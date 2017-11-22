@@ -24,7 +24,12 @@ if (req.body.logusername && req.body.logpassword) {
         return next(err);
       } else {
         req.session.userId = user._id;
-        return res.redirect('/clientPage');
+        if(user.isDoctor==true){
+          return res.send("Doctor is in");
+          //return res.redirect('/doctorPage');
+        }else{
+          return res.redirect('/clientPage');
+        }
       }
     });
   } else {
@@ -45,7 +50,7 @@ router.post('/admin_login', function (req, res, next) {
           return next(err);
         } else {
           req.session.userId = admin._id;
-          return /*res.redirect('/clientPage');*/ res.send("OK");
+          return res.redirect('/adminPage');
         }
       });
     } else {
@@ -58,6 +63,7 @@ router.post('/admin_login', function (req, res, next) {
 //POST route for adding a new user
 router.post('/signup', function (req, res, next) {
 var userData = {
+      isDoctor: false,
       username: req.body.username,
       password: req.body.password,
       email: req.body.email,
@@ -110,6 +116,73 @@ transporter.sendMail(mailOptions, function(error, info){
     
     
 })
+
+//POST route for adding a new doctor
+router.post('/register', function (req, res, next) {
+
+  var userData = {
+        isDoctor: true,
+        username: req.body.username,
+        password: req.body.password,
+        email: req.body.email,
+        name: req.body.name,
+        surname: req.body.surname,
+        birthdate: req.body.birthdate,
+        birthTown: req.body.birthTown,
+        birthProvince: req.body.birthProvince,
+        gender: req.body.gender,
+        /*medicalRegisterProvince: req.body.medRegPrv,*/
+        medicalRegisterNumber: req.body.medRegNum,
+        /*medicalSpecialties:*/
+      }
+      
+      userData.medicalSpecialties=new Array();
+      for (let s of req.body.specialties) {
+
+        userData.medicalSpecialties.push(s);
+      }
+
+  
+  
+  User.create(userData, function (error, user) {
+        if (error) {
+          return next(error);
+        } else {
+          req.session.userId = user._id;
+            res.send("OK");
+          //return res.redirect('/profile');
+        }
+      });
+      
+   var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    secure: true,
+    auth: {
+      user: 'fastalert.healthmonitoring@gmail.com',
+      pass: 'tf7nb39uj1'
+    },
+     tls: {
+          rejectUnauthorized: false
+      }
+  });
+  
+  var mailOptions = {
+    from: 'fastalert.healthmonitoring@gmail.com',
+    to: req.body.email,
+    subject: 'Welcome to FAHM',
+    text: 'Bienvenu doctor!'
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });    
+      
+      
+  })
 
 //check if a username already exists
 router.post('/username', function (req, res, next) {
@@ -180,6 +253,24 @@ router.get('/clientPage', function (req, res, next) {
           return next(err);
         } else {
           return res.sendFile(path.join(__dirname + '/../views/clientPage.html'));
+        }
+      }
+    });
+});
+
+// GET route for admin page
+router.get('/adminPage', function (req, res, next) {
+  Admin.findById(req.session.userId)
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {
+        if (user === null) {
+          var err = new Error('Not authorized! Go back!');
+          err.status = 400;
+          return next(err);
+        } else {
+          return res.sendFile(path.join(__dirname + '/../views/adminPage.html'));
         }
       }
     });

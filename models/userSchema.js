@@ -2,6 +2,10 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 
 var UserSchema = new mongoose.Schema({
+  isDoctor: {
+    type: Boolean,
+    required: true
+  },
   username: {
     type: String,
     unique: true,
@@ -44,7 +48,18 @@ var UserSchema = new mongoose.Schema({
   taxCode: {
     type: String,
     unique: true,
-    required: true,
+    sparse: true
+  },
+  medicalRegisterProvince: {
+    type: String,
+  },
+  medicalRegisterNumber: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  medicalSpecialties: {
+    type: [String]
   }
     
 });

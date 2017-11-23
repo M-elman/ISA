@@ -40,6 +40,7 @@ var UserSchema = new mongoose.Schema({
   birthProvince: {
     type: String,
     required: true,
+    uppercase: true
   },
   gender: {
     type: String,
@@ -47,19 +48,20 @@ var UserSchema = new mongoose.Schema({
   },
   taxCode: {
     type: String,
-    unique: true,
-    sparse: true
+    sparse: true //alternative to "unique: true" requirement, which allows to check the uniqueness only of the elements which have this field
   },
   medicalRegisterProvince: {
     type: String,
+    sparse: true
   },
   medicalRegisterNumber: {
     type: String,
-    unique: true,
     sparse: true
   },
   medicalSpecialties: {
-    type: [String]
+    type: [String],
+    sparse: true,
+    default: undefined //to overwrite the array default value that is [] (empty array)
   }
     
 });

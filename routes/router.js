@@ -71,9 +71,9 @@ var userData = {
       surname: req.body.surname,
       birthdate: req.body.birthdate,
       birthTown: req.body.birthTown,
-      birthProvince: req.body.birthProvince,
+      birthProvince: req.body.birthProvince.toUpperCase(),
       gender: req.body.gender,
-      taxCode: req.body.taxCode,
+      taxCode: req.body.taxCode.toUpperCase(),
     }
 
 
@@ -129,18 +129,24 @@ router.post('/register', function (req, res, next) {
         surname: req.body.surname,
         birthdate: req.body.birthdate,
         birthTown: req.body.birthTown,
-        birthProvince: req.body.birthProvince,
+        birthProvince: req.body.birthProvince.toUpperCase(),
         gender: req.body.gender,
-        /*medicalRegisterProvince: req.body.medRegPrv,*/
+        /*medicalRegisterProvince: req.body.medRegPrv.toUpperCase(),*/
         medicalRegisterNumber: req.body.medRegNum,
         /*medicalSpecialties:*/
       }
-      
-      userData.medicalSpecialties=new Array();
-      for (let s of req.body.specialties) {
-
-        userData.medicalSpecialties.push(s);
+      console.log(req.body)
+      if (req.body.specialties==undefined || req.body.specialties==""){
+        userData.medicalSpecialties=null;
       }
+      else{
+        userData.medicalSpecialties=new Array();
+        for (let s of req.body.specialties) {
+  
+          userData.medicalSpecialties.push(s);
+        }
+      }
+      
 
   
   
@@ -216,13 +222,13 @@ router.post('/birthplace', function (req, res, next) {
     }
     else{
         var found=false;
-        if(catastalCodes[req.body.birthplace_provincia]==undefined){
+        if(catastalCodes[req.body.birthplace_provincia.toUpperCase()]==undefined){
                 res.setHeader('content-type', 'application/json');
                 res.status(404).send(JSON.stringify({bprov_err: "We have not found it in our database", btow_err: null}))  
         }
         else{
-        for (var i = catastalCodes[req.body.birthplace_provincia].length - 1; i >= 0; i--) {
-        var comune = catastalCodes[req.body.birthplace_provincia][i];
+        for (var i = catastalCodes[req.body.birthplace_provincia.toUpperCase()].length - 1; i >= 0; i--) {
+        var comune = catastalCodes[req.body.birthplace_provincia.toUpperCase()][i];
         if(comune[0] == req.body.birthplace.trim().toUpperCase()) found=true;
         }
         if (found==false) {

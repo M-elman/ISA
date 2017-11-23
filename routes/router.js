@@ -245,6 +245,24 @@ router.post('/birthplace', function (req, res, next) {
 })
 
 
+// GET route after registering
+router.get('/minchiaPage', function (req, res, next) {
+  User.findById(req.session.userId)
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {
+        if (user === null) {
+          var err = new Error('Not authorized! Go back!');
+          err.status = 400;
+          return next(err);
+        } else {
+          return res.sendFile(path.join(__dirname + '/../views/minchiaPage.html'));
+        }
+      }
+    });
+});
+
 
 // GET route after registering
 router.get('/clientPage', function (req, res, next) {

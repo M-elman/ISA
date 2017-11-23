@@ -164,8 +164,8 @@
                 <div class="form-group"> <label>Confirm password</label>
                   <input type="password" name="confirm_password" id="confirm_password" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="comparePwds()"> <label id="confirm_password_err" style="color:red;visibility:hidden">Passwords don't match</label></div>
                 <div class="form-group"> <label>E-mail</label>
-                  <input type="email" name="email" id="email" class="form-control" required="" onfocus="resetFieldError(this.id);"> <label id="email_err" style="color:red;visibility:hidden">Insert email address in the example@example.example format</label> </div>
-                <div class="form-group">
+                   <input type="email" name="email" id="email" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkMail();"> <label id="email_err" style="color:red;visibility:hidden"> <b>Please enter a valid email address - </b> Probably you are missing a @ sign</label> </div> 
+                  <div class="form-group">
                   <h4 class="text-white">Medical specialties</h4>
                   <h5 class="text">Select select the specialties you have achieved</h5> 
                   <select name="specialties" id="specialties" multiple="multiple">

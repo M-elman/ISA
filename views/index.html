@@ -58,8 +58,7 @@
                 <div class="form-group"> <label>Confirm password</label>
                   <input type="password" name="confirm_password" id="confirm_password" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="comparePwds()"> <label id="confirm_password_err" style="color:red;visibility:hidden">Passwords don't match</label></div>
                 <div class="form-group"> <label>E-mail</label>
-                  <input type="email" name="email" id="email" class="form-control" required="" onfocus="resetFieldError(this.id);"> <label id="email_err" style="color:red;visibility:hidden">Insert email address in the example@example.example format</label> </div>
-              </div>
+                  <input type="email" name="email" id="email" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkMail();"> <label id="email_err" style="color:red;visibility:hidden"> <b>Please enter a valid email address - </b> Probably you are missing a @ sign</label> </div>               </div>
               <div class="col-md-6">
                 <div class="row">
                   <div class="col-md-6">

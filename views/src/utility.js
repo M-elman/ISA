@@ -97,8 +97,33 @@ function checkBirthPlace(blurredElement){
 
 }
 
-
 function checkTaxCode() {
+
+        if (checkTaxCodeCorrectness()==true){
+            //if tax code is correct we check for the uniqueness of the user within the database
+            checkTaxCodeUniqueness();
+        }
+        
+    }
+
+function checkTaxCodeUniqueness() {
+
+    //if tax code is correct we check for the uniqueness of the user within the database
+    var xhttp = new XMLHttpRequest();
+    
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 449) {
+        document.getElementById("taxCode_err").innerHTML="<b>Are you a new user? - </b> It looks like you are already registered on FAHM";
+        showError("taxCode_err");
+    }
+    };
+    xhttp.open("POST", "/taxcode", true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify({taxCode: document.getElementById("taxCode").value.toUpperCase()}));
+    
+}
+
+function checkTaxCodeCorrectness() {
     
     var generality = {
     name: document.getElementById("name").value,
@@ -111,10 +136,13 @@ function checkTaxCode() {
     birthplace_provincia: document.getElementById("birthProvince").value.toUpperCase()
 };
    if(CodiceFiscale.compute(generality) !== document.getElementById("taxCode").value.toUpperCase()){
+        document.getElementById("taxCode_err").innerHTML="<b>Please check your tax code - </b> It doesn't seem to match with the other data you provided"
         showError("taxCode_err");
         return false;
     }
-    
+    else {
+        return true;
+    }
 }
 
 function computeTaxCode() {
@@ -144,10 +172,24 @@ function computeTaxCode() {
     
 }
 
-
-
-function checkRegistration(){
+function checkMAID() {
     
+        //if tax code is correct we check for the uniqueness of the user within the database
+        var xhttp = new XMLHttpRequest();
+        
+        xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 449) {
+            showError("medRegNum_err");
+        }
+        };
+        xhttp.open("POST", "/maid", true);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.send(JSON.stringify({taxCode: document.getElementById("medRegNum").value}));
+        
+    }
+
+
+function checkRegistration(userType){
 
 
     var isUsernameGood = new Promise(
@@ -196,15 +238,74 @@ function checkRegistration(){
         }
     );
 
-        Promise.all([isUsernameGood, isBirthPlaceGood])
+    var isTaxCodeUnique = new Promise(
+        function(resolve, reject) {
+            $.ajax({
+                type: "POST",
+                url: '/taxcode',
+                contentType:'application/json',
+                data: JSON.stringify({taxCode: document.getElementById("taxCode").value.toUpperCase()}),
+            })
+            .done(function(data, textStatus, xhr){
+                //console.log(data); /*prints the message provided by the server*/
+                //console.log(textStatus); /*prints "success"*/
+                //console.log (xhr); /*prints xhr object*/
+                //console.log(xhr.status); /*prints success code (e.g. 200)*/
+                resolve(xhr.status);
+            })
+            .fail(function(textStatus){
+                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                //console.log(textStatus);  /*prints the Object*/
+                reject("Existing user");
+            });
+        }
+    );
+
+    var isMAIdUnique = new Promise(
+        function(resolve, reject) {
+            $.ajax({
+                type: "POST",
+                url: '/maid',
+                contentType:'application/json',
+                data: JSON.stringify({taxCode: document.getElementById("medRegNum").value}),
+            })
+            .done(function(data, textStatus, xhr){
+                //console.log(data); /*prints the message provided by the server*/
+                //console.log(textStatus); /*prints "success"*/
+                //console.log (xhr); /*prints xhr object*/
+                //console.log(xhr.status); /*prints success code (e.g. 200)*/
+                resolve(xhr.status);
+            })
+            .fail(function(textStatus){
+                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                //console.log(textStatus);  /*prints the Object*/
+                reject("Existing doctor");
+            });
+        }
+    );
+
+    if (userType==="D"){
+        var isCodeUnique=isMAIdUnique;
+        var formID="doc_form"
+    }else{
+        var isCodeUnique=isTaxCodeUnique;
+        var formID="reg_form"
+        if(checkTaxCodeCorrectness()==false) {
+            console.log("The tax code is not correct");
+            return;
+        }
+
+    }
+
+        Promise.all([isUsernameGood, isBirthPlaceGood, isCodeUnique])
         .then(function(fulfill_msg) {
 
-            if(checkPwdStrenght()==false || comparePwds()==false || checkDate()==false || checkTaxCode()==false){
+            if(checkPwdStrenght()==false || comparePwds()==false || checkDate()==false){
                 console.log("There is an error in the form")
             }
             else {
                 console.log("Registering user...")
-                document.getElementById("reg_form").submit(); 
+                document.getElementById(fomID).submit(); 
             }
         })
         .catch(function(error_msg) {

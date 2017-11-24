@@ -131,7 +131,7 @@ router.post('/register', function (req, res, next) {
         birthTown: req.body.birthTown,
         birthProvince: req.body.birthProvince.toUpperCase(),
         gender: req.body.gender,
-        /*medicalRegisterProvince: req.body.medRegPrv.toUpperCase(),*/
+        medicalRegisterProvince: req.body.medRegPrv.toUpperCase(),
         medicalRegisterNumber: req.body.medRegNum,
         /*medicalSpecialties:*/
       }
@@ -205,6 +205,38 @@ User.findOne({ username: req.body.username })
     
 })
 })
+
+//check if a tax code already exists
+router.post('/taxcode', function (req, res, next) {
+  User.findOne({ taxCode: req.body.taxCode })
+     .exec(function (error, user) {
+        if (error) {
+          return next(error);
+        }  else if (user) {
+            res.status(449).send("This user already exists.")
+        } else {
+          res.status(200).send("Check ok.")
+        }
+  
+      
+  })
+  })
+
+  //check if a medical identifier already exists
+router.post('/maid', function (req, res, next) {
+  User.findOne({ medicalRegisterNumber: req.body.medRegNum })
+     .exec(function (error, user) {
+        if (error) {
+          return next(error);
+        }  else if (user) {
+            res.status(449).send("This doctor is already registered.")
+        } else {
+          res.status(200).send("Check ok.")
+        }
+  
+      
+  })
+  })
 
 router.post('/birthplace', function (req, res, next) {
     

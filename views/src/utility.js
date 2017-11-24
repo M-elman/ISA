@@ -97,6 +97,28 @@ function checkBirthPlace(blurredElement){
 
 }
 
+function checkMedRegPrv(){
+  
+    var xhttp = new XMLHttpRequest();
+    
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 404) {
+        var json_res=JSON.parse(this.response)
+
+        if (json_res.medRegPrv_err!=null) {
+            document.getElementById("medRegPrv_err").innerHTML="<b>Please enter a valid province - </b> " + json_res.medRegPrv_err;
+            showError("medRegPrv_err");
+        }
+        
+    }
+    };
+    xhttp.open("POST", "/birthprovince", true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify({medRegPrv: document.getElementById("medRegPrv").value}));
+    
+
+}
+
 function checkTaxCode() {
 
         if (checkTaxCodeCorrectness()==true){
@@ -184,7 +206,7 @@ function checkMAID() {
         };
         xhttp.open("POST", "/maid", true);
         xhttp.setRequestHeader("Content-Type", "application/json");
-        xhttp.send(JSON.stringify({taxCode: document.getElementById("medRegNum").value}));
+        xhttp.send(JSON.stringify({medRegNum: document.getElementById("medRegNum").value}));
         
     }
 
@@ -238,6 +260,29 @@ function checkRegistration(userType){
         }
     );
 
+    var isMedRegPrvGood = new Promise(
+        function(resolve, reject) {
+            $.ajax({
+                type: "POST",
+                url: '/birthprovince',
+                contentType:'application/json',
+                data: JSON.stringify({medRegPrv: document.getElementById("medRegPrv").value}),
+            })
+            .done(function(data, textStatus, xhr){
+                //console.log(data); /*prints the message provided by the server*/
+                //console.log(textStatus); /*prints "success"*/
+                //console.log (xhr); /*prints xhr object*/
+                //console.log(xhr.status); /*prints success code (e.g. 200)*/
+                resolve(xhr.status);
+            })
+            .fail(function(textStatus){
+                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                //console.log(textStatus);  /*prints the Object*/
+                reject("Incorrect membership province");
+            });
+        }
+    );
+
     var isTaxCodeUnique = new Promise(
         function(resolve, reject) {
             $.ajax({
@@ -267,7 +312,7 @@ function checkRegistration(userType){
                 type: "POST",
                 url: '/maid',
                 contentType:'application/json',
-                data: JSON.stringify({taxCode: document.getElementById("medRegNum").value}),
+                data: JSON.stringify({medRegNum: document.getElementById("medRegNum").value}),
             })
             .done(function(data, textStatus, xhr){
                 //console.log(data); /*prints the message provided by the server*/
@@ -285,10 +330,10 @@ function checkRegistration(userType){
     );
 
     if (userType==="D"){
-        var isCodeUnique=isMAIdUnique;
+        var promisesArray=[isUsernameGood, isBirthPlaceGood, isMAIdUnique, isMedRegPrvGood];
         var formID="doc_form"
     }else{
-        var isCodeUnique=isTaxCodeUnique;
+        var promisesArray=[isUsernameGood, isBirthPlaceGood, isTaxCodeUnique];
         var formID="reg_form"
         if(checkTaxCodeCorrectness()==false) {
             console.log("The tax code is not correct");
@@ -297,7 +342,7 @@ function checkRegistration(userType){
 
     }
 
-        Promise.all([isUsernameGood, isBirthPlaceGood, isCodeUnique])
+        Promise.all(promisesArray)
         .then(function(fulfill_msg) {
 
             if(checkPwdStrenght()==false || comparePwds()==false || checkDate()==false){
@@ -305,7 +350,7 @@ function checkRegistration(userType){
             }
             else {
                 console.log("Registering user...")
-                document.getElementById(fomID).submit(); 
+                document.getElementById(formID).submit(); 
             }
         })
         .catch(function(error_msg) {

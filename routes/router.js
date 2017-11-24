@@ -226,6 +226,8 @@ router.post('/taxcode', function (req, res, next) {
 router.post('/maid', function (req, res, next) {
   User.findOne({ medicalRegisterNumber: req.body.medRegNum })
      .exec(function (error, user) {
+       console.log(req.body.medRegNum)
+       console.log(req.body)
         if (error) {
           return next(error);
         }  else if (user) {
@@ -237,6 +239,26 @@ router.post('/maid', function (req, res, next) {
       
   })
   })
+
+
+  router.post('/birthprovince', function (req, res, next) {
+    
+    if (req.body.medRegPrv==""){
+        res.setHeader('content-type', 'application/json');
+        res.status(404).send(JSON.stringify({medRegPrv_err: "This field cannot be left blank"}))
+    }
+    else{
+        if(catastalCodes[req.body.medRegPrv.toUpperCase()]==undefined){
+                res.setHeader('content-type', 'application/json');
+                res.status(404).send(JSON.stringify({medRegPrv_err: "We have not found it in our database"}))  
+        }
+        else{
+                res.status(200).send(JSON.stringify({medRegPrv_err: null}))
+        }
+        
+    }
+    
+})
 
 router.post('/birthplace', function (req, res, next) {
     

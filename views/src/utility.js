@@ -284,74 +284,6 @@ function checkRegistration(formID){
         }
     );
 
-    var isMedRegPrvGood = new Promise(
-        function(resolve, reject) {
-            $.ajax({
-                type: "POST",
-                url: '/birthprovince',
-                contentType:'application/json',
-                data: JSON.stringify({medRegPrv: document.getElementById("medRegPrv").value}),
-            })
-            .done(function(data, textStatus, xhr){
-                //console.log(data); /*prints the message provided by the server*/
-                //console.log(textStatus); /*prints "success"*/
-                //console.log (xhr); /*prints xhr object*/
-                //console.log(xhr.status); /*prints success code (e.g. 200)*/
-                resolve(xhr.status);
-            })
-            .fail(function(textStatus){
-                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
-                //console.log(textStatus);  /*prints the Object*/
-                reject("Incorrect membership province");
-            });
-        }
-    );
-
-    var isTaxCodeUnique = new Promise(
-        function(resolve, reject) {
-            $.ajax({
-                type: "POST",
-                url: '/taxcode',
-                contentType:'application/json',
-                data: JSON.stringify({taxCode: document.getElementById("taxCode").value.toUpperCase()}),
-            })
-            .done(function(data, textStatus, xhr){
-                //console.log(data); /*prints the message provided by the server*/
-                //console.log(textStatus); /*prints "success"*/
-                //console.log (xhr); /*prints xhr object*/
-                //console.log(xhr.status); /*prints success code (e.g. 200)*/
-                resolve(xhr.status);
-            })
-            .fail(function(textStatus){
-                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
-                //console.log(textStatus);  /*prints the Object*/
-                reject("Existing user");
-            });
-        }
-    );
-
-    var isMAIdUnique = new Promise(
-        function(resolve, reject) {
-            $.ajax({
-                type: "POST",
-                url: '/maid',
-                contentType:'application/json',
-                data: JSON.stringify({medRegNum: document.getElementById("medRegNum").value}),
-            })
-            .done(function(data, textStatus, xhr){
-                //console.log(data); /*prints the message provided by the server*/
-                //console.log(textStatus); /*prints "success"*/
-                //console.log (xhr); /*prints xhr object*/
-                //console.log(xhr.status); /*prints success code (e.g. 200)*/
-                resolve(xhr.status);
-            })
-            .fail(function(textStatus){
-                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
-                //console.log(textStatus);  /*prints the Object*/
-                reject("Existing doctor");
-            });
-        }
-    );
 
 
     var isValid = true;
@@ -366,6 +298,53 @@ function checkRegistration(formID){
 
 
     if (formID==="doc_form"){
+        var isMAIdUnique = new Promise(
+            function(resolve, reject) {
+                $.ajax({
+                    type: "POST",
+                    url: '/maid',
+                    contentType:'application/json',
+                    data: JSON.stringify({medRegNum: document.getElementById("medRegNum").value}),
+                })
+                .done(function(data, textStatus, xhr){
+                    //console.log(data); /*prints the message provided by the server*/
+                    //console.log(textStatus); /*prints "success"*/
+                    //console.log (xhr); /*prints xhr object*/
+                    //console.log(xhr.status); /*prints success code (e.g. 200)*/
+                    resolve(xhr.status);
+                })
+                .fail(function(textStatus){
+                    //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                    //console.log(textStatus);  /*prints the Object*/
+                    reject("Existing doctor");
+                });
+            }
+        );
+
+        var isMedRegPrvGood = new Promise(
+            function(resolve, reject) {
+                $.ajax({
+                    type: "POST",
+                    url: '/birthprovince',
+                    contentType:'application/json',
+                    data: JSON.stringify({medRegPrv: document.getElementById("medRegPrv").value}),
+                })
+                .done(function(data, textStatus, xhr){
+                    //console.log(data); /*prints the message provided by the server*/
+                    //console.log(textStatus); /*prints "success"*/
+                    //console.log (xhr); /*prints xhr object*/
+                    //console.log(xhr.status); /*prints success code (e.g. 200)*/
+                    resolve(xhr.status);
+                })
+                .fail(function(textStatus){
+                    //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                    //console.log(textStatus);  /*prints the Object*/
+                    reject("Incorrect membership province");
+                });
+            }
+        );
+
+
         var promisesArray=[isUsernameGood, isBirthPlaceGood, isMAIdUnique, isMedRegPrvGood];
         if(checkMAIDCorrectness()==false) {
             console.log("The Medical Association ID is not correct");
@@ -373,6 +352,28 @@ function checkRegistration(formID){
         }
 
     }else{
+        var isTaxCodeUnique = new Promise(
+            function(resolve, reject) {
+                $.ajax({
+                    type: "POST",
+                    url: '/taxcode',
+                    contentType:'application/json',
+                    data: JSON.stringify({taxCode: document.getElementById("taxCode").value.toUpperCase()}),
+                })
+                .done(function(data, textStatus, xhr){
+                    //console.log(data); /*prints the message provided by the server*/
+                    //console.log(textStatus); /*prints "success"*/
+                    //console.log (xhr); /*prints xhr object*/
+                    //console.log(xhr.status); /*prints success code (e.g. 200)*/
+                    resolve(xhr.status);
+                })
+                .fail(function(textStatus){
+                    //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                    //console.log(textStatus);  /*prints the Object*/
+                    reject("Existing user");
+                });
+            }
+        );
         var promisesArray=[isUsernameGood, isBirthPlaceGood, isTaxCodeUnique];
         if(checkTaxCodeCorrectness()==false) {
             console.log("The tax code is not correct");

@@ -357,7 +357,6 @@ function checkRegistration(formID){
     var isValid = true;
     var searchString="#" + formID +" input:invalid";
     $(searchString).each(function() {
-        if ( $(this).val() == '' ||  $(this).val() == undefined)
             isValid = false;
     });
     if (isValid==false) {

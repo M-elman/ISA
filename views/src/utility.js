@@ -196,11 +196,22 @@ function computeTaxCode() {
 
 function checkMAID() {
     
+            if (checkMAIDCorrectness()==true){
+                //if id is correct we check for the uniqueness of the user within the database
+                checkMAIDUniqueness();
+            }
+            
+        }
+
+
+function checkMAIDUniqueness() {
+    
         //if tax code is correct we check for the uniqueness of the user within the database
         var xhttp = new XMLHttpRequest();
         
         xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 449) {
+            document.getElementById("medRegNum_err").innerHTML="<b>Please check the ID - </b> This one identifies an already registered doctor"
             showError("medRegNum_err");
         }
         };
@@ -210,8 +221,21 @@ function checkMAID() {
         
     }
 
+    function checkMAIDCorrectness() {
+        
+        var formatRegExp=/^\d{10}$/; /*slash indica l'inizio e la fine della regexp, \d indica un digit, ripetuto 10 volte*/
+        if (formatRegExp.test(document.getElementById("medRegNum").value)==false){
+            document.getElementById("medRegNum_err").innerHTML="<b>Please check the ID - </b> It should be a 10 digits number"
+            showError("medRegNum_err");
+            return false;
+        }else {
+            return true;
+        }
+        
+    }
 
-function checkRegistration(userType){
+
+function checkRegistration(formID){
 
 
     var isUsernameGood = new Promise(
@@ -329,12 +353,28 @@ function checkRegistration(userType){
         }
     );
 
-    if (userType==="D"){
+
+    var isValid = true;
+    var searchString="#" + formID +" input:invalid";
+    $(searchString).each(function() {
+        if ( $(this).val() == '' ||  $(this).val() == undefined)
+            isValid = false;
+    });
+    if (isValid==false) {
+        console.log("All fields are required");
+        return;
+    }
+
+
+    if (formID==="doc_form"){
         var promisesArray=[isUsernameGood, isBirthPlaceGood, isMAIdUnique, isMedRegPrvGood];
-        var formID="doc_form"
+        if(checkMAIDCorrectness()==false) {
+            console.log("The Medical Association ID is not correct");
+            return;
+        }
+
     }else{
         var promisesArray=[isUsernameGood, isBirthPlaceGood, isTaxCodeUnique];
-        var formID="reg_form"
         if(checkTaxCodeCorrectness()==false) {
             console.log("The tax code is not correct");
             return;

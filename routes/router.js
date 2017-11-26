@@ -7,9 +7,22 @@ var nodemailer = require('nodemailer');
 const catastalCodes = require('../models/catastal-codes.json')
 
 
-// GET route for reading data
+ // GET route for reading data
 router.get('/', function (req, res, next) {
-  return res.sendFile(path.join(__dirname + '/views/index.html'));
+  console.log(req.session);
+  User.findById(req.session.userId)
+  .exec(function (error, user) {
+    if (error) {
+      return next(error);
+    } else {
+      if (user === null) {
+        return res.sendFile(path.join(__dirname + '/views/index.html'));
+      } else {
+        console.log(user);
+        return res.sendFile(path.join(__dirname + '/../views/clientPage.html'));
+      }
+    }
+  });
 });
 
 
@@ -135,7 +148,6 @@ router.post('/register', function (req, res, next) {
         medicalRegisterNumber: req.body.medRegNum,
         /*medicalSpecialties:*/
       }
-      console.log(req.body)
       if (req.body.specialties==undefined || req.body.specialties==""){
         userData.medicalSpecialties=null;
       }
@@ -226,8 +238,6 @@ router.post('/taxcode', function (req, res, next) {
 router.post('/maid', function (req, res, next) {
   User.findOne({ medicalRegisterNumber: req.body.medRegNum })
      .exec(function (error, user) {
-       console.log(req.body.medRegNum)
-       console.log(req.body)
         if (error) {
           return next(error);
         }  else if (user) {

@@ -196,7 +196,7 @@
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group"> <label>Medical Association identifier</label>
-                      <input type="number" name="medRegNum" id="medRegNum" class="form-control" minlength="10" maxlength="10" min="0000000000" required="" onblur="checkMAID();" onfocus="resetFieldError(this.id);"> <label id="medRegNum_err" style="color:red;visibility:hidden"><b>Please check the ID - </b> This one identifies an already registered doctor</label> </div>
+                      <input type="text" name="medRegNum" id="medRegNum" class="form-control" minlength="10" maxlength="10" required="" onblur="checkMAID();" onfocus="resetFieldError(this.id);"> <label id="medRegNum_err" style="color:red;visibility:hidden"><b>Please check the ID - </b> This one identifies an already registered doctor</label> </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group"> <label>M.A.'s membership province </label>
@@ -268,7 +268,7 @@
       <div class="row">
         <div class="col-md-6"></div>
         <div class="col-md-6 mx-auto text-right">
-          <button type="submit" class="btn btn-dark" onclick="checkRegistration('D');">Submit</button>
+          <button type="submit" class="btn btn-dark" onclick="checkRegistration('doc_form');">Submit</button>
         </div>
       </div>
     </div>

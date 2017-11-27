@@ -16,9 +16,9 @@ router.get('/', function (req, res, next) {
       return next(error);
     } else {
       if (user === null) {
-        return res.sendFile(path.join(__dirname + '/views/index.html'));
+        return res.sendFile(path.join(__dirname + '/../views/index.html'));
       } else {
-        console.log(user);
+        //gestisci se è dottore e se è admin
         return res.sendFile(path.join(__dirname + '/../views/clientPage.html'));
       }
     }
@@ -251,7 +251,7 @@ router.post('/maid', function (req, res, next) {
   })
 
 
-  router.post('/birthprovince', function (req, res, next) {
+  router.post('/birthprovince', function (req, res, next) {console.log("1111");
     
     if (req.body.medRegPrv==""){
         res.setHeader('content-type', 'application/json');
@@ -334,8 +334,8 @@ router.get('/clientPage', function (req, res, next) {
     .exec(function (error, user) {
       if (error) {
         return next(error);
-      } else {
-        if (user === null) {
+      } else {      
+        if (user === null) {     
           var err = new Error('Not authorized! Go back!');
           err.status = 400;
           return next(err);
@@ -345,6 +345,7 @@ router.get('/clientPage', function (req, res, next) {
       }
     });
 });
+
 
 // GET route for admin page
 router.get('/adminPage', function (req, res, next) {

@@ -320,7 +320,9 @@
     $(document).ready(function() {
         $('#specialties').multiselect({
             enableFiltering: true,
-          	filterBehavior: 'value'
+            filterBehavior: 'value',
+            includeFilterClearBtn: false,
+            includeSelectAllOption: false
         });
     });
   </script>

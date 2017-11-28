@@ -16,7 +16,19 @@ router.get('/', function (req, res, next) {
       return next(error);
     } else {
       if (user === null) {
-        return res.sendFile(path.join(__dirname + '/../views/index.html'));
+        //check if there is an active admin session
+        Admin.findById(req.session.userId)
+        .exec(function (error, user) {
+          if (error) {
+            return next(error);
+          } else {
+            if (user === null) {
+              return res.sendFile(path.join(__dirname + '/../views/index.html'));
+            } else {
+              return res.sendFile(path.join(__dirname + '/../views/adminPage.html'));
+            }
+          }
+        });
       } else {
         //gestisci se è dottore e se è admin
         return res.sendFile(path.join(__dirname + '/../views/clientPage.html'));

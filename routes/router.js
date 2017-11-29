@@ -5,11 +5,11 @@ var Admin = require('../models/adminSchema');
 var path = require('path');
 var nodemailer = require('nodemailer');
 const catastalCodes = require('../models/catastal-codes.json')
+  
 
 
  // GET route for reading data
 router.get('/', function (req, res, next) {
-  console.log(req.session);
   User.findById(req.session.userId)
   .exec(function (error, user) {
     if (error) {
@@ -25,12 +25,14 @@ router.get('/', function (req, res, next) {
             if (user === null) {
               return res.sendFile(path.join(__dirname + '/../views/index.html'));
             } else {
+              //non si potrebbe fare redirect anzichè sendFile?
               return res.sendFile(path.join(__dirname + '/../views/adminPage.html'));
             }
           }
         });
       } else {
         //gestisci se è dottore e se è admin
+        //non si potrebbe fare redirect anzichè sendFile?
         return res.sendFile(path.join(__dirname + '/../views/clientPage.html'));
       }
     }
@@ -92,8 +94,8 @@ var userData = {
       username: req.body.username,
       password: req.body.password,
       email: req.body.email,
-      name: req.body.name,
-      surname: req.body.surname,
+      name: req.body.name.toLowerCase(),
+      surname: req.body.surname.toLowerCase(),
       birthdate: req.body.birthdate,
       birthTown: req.body.birthTown,
       birthProvince: req.body.birthProvince.toUpperCase(),
@@ -150,8 +152,8 @@ router.post('/register', function (req, res, next) {
         username: req.body.username,
         password: req.body.password,
         email: req.body.email,
-        name: req.body.name,
-        surname: req.body.surname,
+        name: req.body.name.toLowerCase(),
+        surname: req.body.surname.toLowerCase(), //useful to efficiently query the collection
         birthdate: req.body.birthdate,
         birthTown: req.body.birthTown,
         birthProvince: req.body.birthProvince.toUpperCase(),
@@ -321,23 +323,87 @@ router.post('/birthplace', function (req, res, next) {
 })
 
 
-// GET route after registering
-router.get('/minchiaPage', function (req, res, next) {
+router.get('/searchdoctor', function (req, res, next) {
+
+  if (req.query.doctorSurname !== undefined && req.query.doctorID === undefined)  {
+    var surname = req.query.doctorSurname; 
+    //query mongoDB and return answer
+    var selectedFields = 'name surname birthdate medicalRegisterProvince medicalRegisterNumber';
+    User.find({ 'surname': surname.toLowerCase(), 'isDoctor': true }, selectedFields)
+      .exec(function (err, docs) {
+      // docs is an array
+      if (err) {
+        return next(err);
+      } else {
+          if (docs.length==0) {
+            return res.status(404).send("Doctor not found. Please check the input and specify the complete surname. ");
+          }
+          else{
+          var data = [];
+          for (var i = 0; i < docs.length; i++) {
+            data.push(docs[i]);
+          }
+          return res.status(200).json(data);
+        }
+        
+      }
+    });
+  }else if  (req.query.doctorSurname === undefined && req.query.doctorID !== undefined){
+    //query mongoDB and return answer
+    var selectedFields = 'name surname birthdate birthTown birthProvince gender medicalRegisterProvince medicalRegisterNumber medicalSpecialties';
+    User.findOne({ 'medicalRegisterNumber': req.query.doctorID}, selectedFields)
+      .exec(function (err, user) {
+      if (err) {
+        return next(err);
+      } else {      
+       
+          return res.status(200).json(user);
+        
+      }
+    });
+
+  }
+  
+
+});
+
+router.get('/getusername', function (req, res, next) {
+  
   User.findById(req.session.userId)
+  .exec(function (error, user) {
+    if (error) {
+      return next(error);
+    } else {      
+      if (user === null) {     
+        //impossible
+        return next(err);
+      } else {
+        return res.send(user.username);
+      }
+    }
+  });    
+  
+  });
+
+  router.get('/getuserdata', function (req, res, next) {
+    var selectedFields = 'name surname birthdate birthTown birthProvince email taxCode';    
+    User.findById(req.session.userId, selectedFields)
     .exec(function (error, user) {
       if (error) {
         return next(error);
-      } else {
-        if (user === null) {
-          var err = new Error('Not authorized! Go back!');
-          err.status = 400;
+      } else {      
+        if (user === null) {     
+          //impossible
           return next(err);
         } else {
-          return res.sendFile(path.join(__dirname + '/../views/minchiaPage.html'));
+          return res.json(user);
         }
       }
+    });    
+    
     });
-});
+
+
 
 
 // GET route after registering

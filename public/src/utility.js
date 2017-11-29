@@ -411,3 +411,165 @@ function resetFieldError(id){
 function showError(id){
     document.getElementById(id).style.visibility="";   
 }
+
+//create doctor's table
+function createTableFromJSON(doctorSurname) {
+
+    $.ajax({
+        type: "GET",
+        url: '/searchdoctor',
+        data: {
+            doctorSurname: doctorSurname
+        },
+    })
+    .done(function(data, textStatus, xhr){
+        //data contains the doctor array provided by the server*/
+       
+        // EXTRACT VALUE FOR HTML HEADER. 
+        // (id name surname birthdate birthTown birthProvince gender medicalRegisterProvince medicalRegisterNumber medicalSpecialties)
+        var col = [];
+        col.push('name');
+        col.push('surname');
+        col.push('birthdate');
+        col.push('medicalRegisterProvince');
+        
+        // CREATE DYNAMIC TABLE.
+        var table = document.createElement("table");
+    
+        // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+    
+        var tr = table.insertRow(-1);                   // TABLE ROW.
+    
+        for (var i = 0; i < col.length; i++) {
+            var th = document.createElement("th");      // TABLE HEADER.
+            th.innerHTML = col[i];
+            tr.appendChild(th);
+        }
+    
+        // ADD JSON DATA TO THE TABLE AS ROWS.
+        for (var i = 0; i < data.length; i++) {
+    
+            tr = table.insertRow(-1);
+    
+            for (var j = 0; j < col.length; j++) {
+                var tabCell = tr.insertCell(-1); //inserisce la cella alla fine della riga
+                tabCell.innerHTML = data[i][col[j]];
+            }
+
+            var tabCell = tr.insertCell(-1);
+            var btn = document.createElement('input');
+            btn.type = "button";
+            btn.className = "btn";
+            btn.value = "Show";
+            btn.id = data[tr.rowIndex-1].medicalRegisterNumber;
+            //btn.onclick = populateDoctorOutline();
+            tabCell.appendChild(btn);
+            btn.addEventListener("click", populateDoctorOutline);  
+        }
+    
+        // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+        var divContainer = document.getElementById("search_results");
+        divContainer.innerHTML = "";
+        divContainer.appendChild(table);
+
+
+
+    })
+    .fail(function(textStatus){
+        //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+        //console.log(textStatus);  /*prints the Object*/
+        console.log(textStatus)
+        var divContainer = document.getElementById("search_results");        
+        divContainer.innerHTML = textStatus.responseText;
+    });
+
+
+
+}
+
+
+function populateDoctorOutline(){
+
+    var doctorID=this.id;
+    $.ajax({
+        type: "GET",
+        url: '/searchdoctor',
+        data: {
+            doctorID: doctorID
+        },
+    })
+    .done(function(data, textStatus, xhr){
+        //data contains the doctor profile provided by the server*/
+        if(data["gender"]=="M"){
+            document.getElementById("nameSurnameVal").innerHTML="Dott. " + data["name"] + " " + data["surname"];
+            
+        }else{
+            document.getElementById("nameSurnameVal").innerHTML="Dott.ssa " + data["name"] + " " + data["surname"];
+        }
+        document.getElementById("codeVal").innerHTML="Provincial Medical Association of " + data["medicalRegisterProvince"] + " n." + data["medicalRegisterNumber"];
+        document.getElementById("birthdateVal").innerHTML=data["birthdate"];
+        document.getElementById("placeVal").innerHTML=data["birthTown"] + " (" + data["birthProvince"] + ")";
+        var ul=document.getElementById("specialtiesList");
+        while (ul.firstChild) { //empties old elements of the list
+            ul.removeChild(ul.firstChild);
+        }
+        for (var i = 0; i < data["medicalSpecialties"].length; i++){
+            var li = document.createElement('li');
+            li.setAttribute('class','item');
+            li.innerHTML=data["medicalSpecialties"][i];
+            ul.appendChild(li);
+        }
+    
+        document.getElementById("docInfo").style.display="";   
+
+    })
+    .fail(function(textStatus){
+        //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+        //console.log(textStatus);  /*prints the Object*/
+    });
+
+    
+}
+
+function getUsername(){
+
+    $.ajax({
+        type: "GET",
+        url: '/getusername',
+    })
+    .done(function(data, textStatus, xhr){
+        //data contains the username*/
+
+            document.getElementById("welcome_label").innerHTML="Welcome " + data + "!";
+        
+
+    })
+    .fail(function(textStatus){
+        //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+        //console.log(textStatus);  /*prints the Object*/
+    });
+
+
+}
+
+function getUserData(){
+    
+        $.ajax({
+            type: "GET",
+            url: '/getuserdata',
+        })
+        .done(function(data, textStatus, xhr){
+            //data contains the user data provided by the server*/
+                document.getElementById("profileNS").innerHTML=data["name"] + " " + data["surname"];
+                document.getElementById("profileTC").innerHTML=data["taxCode"];
+                document.getElementById("profileBD").innerHTML=data["birthdate"];
+                document.getElementById("profileBP").innerHTML=data["birthTown"] + " (" + data["birthProvince"] + ")";
+                document.getElementById("profileMail").innerHTML=data["email"];
+        })
+        .fail(function(textStatus){
+            //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+            //console.log(textStatus);  /*prints the Object*/
+        });
+    
+    
+    }

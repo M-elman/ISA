@@ -4,7 +4,9 @@ var User = require('../models/userSchema');
 var Admin = require('../models/adminSchema');
 var path = require('path');
 var nodemailer = require('nodemailer');
-const catastalCodes = require('../models/catastal-codes.json')
+const catastalCodes = require('../models/catastal-codes.json');
+const medical_specialties = require('../models/medical_specialties.json');
+
   
 
 
@@ -162,8 +164,13 @@ router.post('/register', function (req, res, next) {
         medicalRegisterNumber: req.body.medRegNum,
         /*medicalSpecialties:*/
       }
+
       if (req.body.specialties==undefined || req.body.specialties==""){
         userData.medicalSpecialties=null;
+      }
+      else if(req.body.specialties.constructor !== Array){
+        userData.medicalSpecialties=new Array();
+        userData.medicalSpecialties.push(req.body.specialties);
       }
       else{
         userData.medicalSpecialties=new Array();
@@ -216,6 +223,45 @@ router.post('/register', function (req, res, next) {
       
   })
 
+  //POST route for updating doctor
+router.post('/updatedoc', function (req, res, next) {
+  if(req.body.updMedRegPrv!=="" && req.body.updMedRegPrv!==undefined){
+  User.findOneAndUpdate({ medicalRegisterNumber: req.body.doc_id }, { $set: { medicalRegisterProvince: req.body.updMedRegPrv,  medicalSpecialties: null}}, function(err, usr){
+    if (err) {return res.send(500, { error: err });}
+  });
+}
+      var emptyArray=new Array();
+      User.findOneAndUpdate({ medicalRegisterNumber: req.body.doc_id }, { $set: { medicalSpecialties: emptyArray  }}, function(err, usr){
+        if (err) {return res.send(500, { error: err });}
+        else{
+          if (req.body.updSpecialtiesDoc !=="" && req.body.updSpecialtiesDoc!==undefined ){
+            
+              if(req.body.updSpecialtiesDoc.constructor !== Array){
+                User.findOneAndUpdate({ medicalRegisterNumber: req.body.doc_id }, { $push: { medicalSpecialties: req.body.updSpecialtiesDoc  }}, function(err, usr){
+                if (err) {return res.send(500, { error: err });}
+                else{
+                  res.status(200).send("OK");                  
+                }
+                });
+              }else{
+                for (let specialty of req.body.updSpecialtiesDoc) {
+                  User.findOneAndUpdate({ medicalRegisterNumber: req.body.doc_id }, { $push: { medicalSpecialties: specialty  }}, function(err, usr){
+                    if (err) return res.send(500, { error: err });
+                  });
+                  }
+                  res.status(200).send("OK");
+            }
+          }
+          else{
+            res.status(200).send("OK");
+            
+          }
+
+        }
+      });
+      
+    })
+
 //check if a username already exists
 router.post('/username', function (req, res, next) {
 User.findOne({ username: req.body.username })
@@ -265,7 +311,7 @@ router.post('/maid', function (req, res, next) {
   })
 
 
-  router.post('/birthprovince', function (req, res, next) {console.log("1111");
+  router.post('/birthprovince', function (req, res, next) {
     
     if (req.body.medRegPrv==""){
         res.setHeader('content-type', 'application/json');
@@ -321,6 +367,10 @@ router.post('/birthplace', function (req, res, next) {
     }
     
 })
+
+router.get('/specialties', function (req, res, next) {
+  res.status(200).json(medical_specialties);
+});
 
 
 router.get('/searchdoctor', function (req, res, next) {

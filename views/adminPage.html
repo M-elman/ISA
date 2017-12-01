@@ -80,7 +80,7 @@
                   <div class="col-md-9">
                     <input type="text" id="findDoc" class="form-control" required=""> </div>
                   <div class="col-md-3">
-                    <button class="btn btn-primary">Search</button>
+                    <button class="btn btn-primary" onclick="createTableFromJSON(document.getElementById('findDoc').value)">Search</button>
                   </div>
                 </div>
                 <div class="row"></div>
@@ -94,15 +94,15 @@
           </div>
         </div>
         <div class="col-md-6">
-          <div class="container" id="docInfo">
+          <div class="container" id="docInfo" style="display: none">
             <div class="row">
               <div class="col-md-12">
-                <h2 class="text-primary">Nome e cognome dottore</h2>
+                <h2 class="text-primary" id="nameSurnameVal"></h2>
               </div>
             </div>
             <div class="row">
               <div class="col-md-6">
-                <h4 class="text-white">Codice registrazione</h4>
+                <h4 class="text-white">Iscrizione</h4>
               </div>
               <div class="col-md-6">
                 <h5 class="text-black" id="codeVal">valore </h5>
@@ -129,14 +129,19 @@
                 <h4 class="text-white" id="specialtiesVal">Specialties</h4>
               </div>
               <div class="col-md-6">
-                <h5 class="text-black">valore eventualmente con una lista</h5>
+                <h5 class="text-black">
+                  <ul id="specialtiesList">
+                    
+                  </ul>
+                </h5>
               </div>
             </div>
             <div class="row">
               <div class="col-md-6">
-                <h4 class="text-white">E-mail</h4> consentire una volta trovato il dottore di poterne aggiornare i dati o addirittura eliminarlo dalla piattaforma </div>
+                  <button class="btn btn-primary"  onclick="loadSpecialties(true,'updSpecialtiesDoc');" data-target="#updDocModal" data-toggle="modal">Modify doctor</button>
+              </div>
               <div class="col-md-6">
-                <h5 class="text-black" id="emailVal">valore </h5>
+                  <button class="btn btn-primary" onclick="">Drop doctor</button>                  
               </div>
             </div>
           </div>
@@ -200,24 +205,12 @@
                   </div>
                   <div class="col-md-6">
                     <div class="form-group"> <label>M.A.'s membership province </label>
-                      <input type="text" name="medRegPrv" id="medRegPrv" maxlength="2" class="form-control text-uppercase" required="" onblur="checkMedRegPrv();" onfocus="resetFieldError(this.id);"> <label id="medRegPrv_err" style="color:red;visibility:hidden"><b>Please enter a valid province - </b> We have not found it in our database</label> </div>
+                      <input type="text" name="medRegPrv" id="medRegPrv" maxlength="2" class="form-control text-uppercase" required="" onblur="checkMedRegPrv(this.id);" onfocus="resetFieldError(this.id);"> <label id="medRegPrv_err" style="color:red;visibility:hidden"><b>Please enter a valid province - </b> We have not found it in our database</label> </div>
                   </div>
                 </div>
                 <div class="form-group">
                   <h4 class="text-white">Medical specialties</h4>
                   <h5 class="text">Select select the specialties you have achieved</h5> <select name="specialties" id="specialties" multiple="multiple">
-                    <option value="cheese">Cheese</option>
-                    <option value="tomatoes">Tomatoes</option>
-                    <option value="mozarella">Mozzarella</option>
-                    <option value="mushrooms">Mushrooms</option>
-                    <option value="pepperoni">Pepperoni</option>
-                    <option value="onions">Onions</option>
-                    <option value="cheese">Cheese</option>
-                    <option value="tomatoes">Tomatoes</option>
-                    <option value="mozarella">Mozzarella</option>
-                    <option value="mushrooms">Mushrooms</option>
-                    <option value="pepperoni">Pepperoni</option>
-                    <option value="onions">Onions</option>
                 </select> </div>
               </div>
             </div>
@@ -305,6 +298,58 @@
       </div>
     </div>
   </div>
+  <div class="modal" id="updDocModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">Update doctor's profile</h3>            
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+          </div>
+          <div class="modal-body">
+            <form id="upd_form" class="" method="post" action="/updatedoc">
+            
+              <h4 class="text-secondary">Medical Association n. </h4><input type="text" name="doc_id" id="doc_id" readonly></input>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <h4 class="text-secondary">Province</h4>
+                      <input type="text" name="updMedRegPrv" id="updMedRegPrv" maxlength="2" class="form-control text-uppercase" required="" onblur="checkMedRegPrv(this.id);" onfocus="resetFieldError(this.id);"> <label id="updMedRegPrv_err" style="color:red;visibility:hidden"><b>Please enter a valid province</b></label> </div>
+                    </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <h4 class="text-secondary">Medical specialties</h4>
+                      <h5 class="text">Select the specialties you have achieved</h5> <select id="updSpecialtiesDoc" name="updSpecialtiesDoc" multiple="multiple">
+                          <!-- <option value="cheese">Cheese</option> 
+                          <option value="tomatoes">Tomatoes</option>
+                          <option value="mozarella">Mozzarella</option>
+                          <option value="mushrooms">Mushrooms</option>
+                          <option value="pepperoni">Pepperoni</option>
+                          <option value="onions">Onions</option>
+                          <option value="cheese">Cheese</option>
+                          <option value="tomatoes">Tomatoes</option>
+                          <option value="mozarella">Mozzarella</option>
+                          <option value="mushrooms">Mushrooms</option>
+                          <option value="pepperoni">Pepperoni</option>
+                          <option value="onions">Onions</option> -->
+                    </select> </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+          <button type="submit" class="btn btn-dark" onclick="checkUpdate();">Submit</button>          
+          </div>
+        </div>
+      </div>
+    </div>
+
+
   <!--
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> 
 	-->
@@ -318,12 +363,20 @@
 	-->
   <script type="text/javascript">
     $(document).ready(function() {
+      loadSpecialties(false, "specialties");
         $('#specialties').multiselect({
             enableFiltering: true,
             filterBehavior: 'value',
             includeFilterClearBtn: false,
             includeSelectAllOption: false
         });
+        $('#updSpecialtiesDoc').multiselect({
+            enableFiltering: true,
+            filterBehavior: 'value',
+            includeFilterClearBtn: false,
+            includeSelectAllOption: false
+        });
+
     });
   </script>
 </body>

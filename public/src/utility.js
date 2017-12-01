@@ -97,8 +97,9 @@ function checkBirthPlace(blurredElement){
 
 }
 
-function checkMedRegPrv(){
+function checkMedRegPrv(prvInputID){
   
+    var error_label=prvInputID+"_err"
     var xhttp = new XMLHttpRequest();
     
     xhttp.onreadystatechange = function() {
@@ -106,15 +107,15 @@ function checkMedRegPrv(){
         var json_res=JSON.parse(this.response)
 
         if (json_res.medRegPrv_err!=null) {
-            document.getElementById("medRegPrv_err").innerHTML="<b>Please enter a valid province - </b> " + json_res.medRegPrv_err;
-            showError("medRegPrv_err");
+            document.getElementById(error_label).innerHTML="<b>Please enter a valid province</b> ";
+            showError(error_label);
         }
         
     }
     };
     xhttp.open("POST", "/birthprovince", true);
     xhttp.setRequestHeader("Content-Type", "application/json");
-    xhttp.send(JSON.stringify({medRegPrv: document.getElementById("medRegPrv").value}));
+    xhttp.send(JSON.stringify({medRegPrv: document.getElementById(prvInputID).value}));
     
 
 }
@@ -461,6 +462,7 @@ function createTableFromJSON(doctorSurname) {
             btn.type = "button";
             btn.className = "btn";
             btn.value = "Show";
+            btn.style="cursor: pointer"
             btn.id = data[tr.rowIndex-1].medicalRegisterNumber;
             //btn.onclick = populateDoctorOutline();
             tabCell.appendChild(btn);
@@ -478,7 +480,6 @@ function createTableFromJSON(doctorSurname) {
     .fail(function(textStatus){
         //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
         //console.log(textStatus);  /*prints the Object*/
-        console.log(textStatus)
         var divContainer = document.getElementById("search_results");        
         divContainer.innerHTML = textStatus.responseText;
     });
@@ -573,3 +574,87 @@ function getUserData(){
     
     
     }
+
+    function loadSpecialties(isUpdating, selectID){
+        var myString=document.getElementById("codeVal").innerHTML;
+        document.getElementById("doc_id").value=myString.substring(myString.indexOf(".")+1);
+        if(isUpdating==true){
+            var currentSpecialties = [];
+            $('#specialtiesList li').each(function(){
+                currentSpecialties.push($(this).text());
+            });
+        }
+
+        $.ajax({
+            type: "GET",
+            url: '/specialties',
+        })
+        .done(function(data, textStatus, xhr){
+            //console.log(data); /*prints the message provided by the server*/
+            //console.log(textStatus); /*prints "success"*/
+            //console.log (xhr); /*prints xhr object*/
+            //console.log(xhr.status); /*prints success code (e.g. 200)*/
+
+/*             var $select = $('#specialties');
+            $(data).each(function (index, spec) {  
+                console.log(index, spec);  
+                var $option = $("<option/>").attr("value", spec.specialty).text(spec.specialty);
+                console.log($option)
+                $select.append($option);
+            }); */
+
+            var parentSelect = document.getElementById(selectID);
+            while (parentSelect.firstChild) { //empties old elements of the list
+                parentSelect.removeChild(parentSelect.firstChild);
+            }
+            for (var i = 0; i < data.length; i++) {
+                var opt = document.createElement("option");      // TABLE HEADER.
+                opt.innerHTML = data[i].specialty;
+                opt.value = data[i].specialty;
+                if (isUpdating==true && $.inArray(data[i].specialty, currentSpecialties) != -1){
+                    //we are updating specialties and the current retrieved specialty is already got by the doctor
+                    opt.selected = true;
+                }
+                parentSelect.appendChild(opt);
+            }
+            $('#'+selectID).multiselect('rebuild');
+            
+        })
+        .fail(function(textStatus){
+            //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+            //console.log(textStatus);  /*prints the Object*/
+            
+        });
+
+        
+
+    }
+
+    function checkUpdate(){
+        if(document.getElementById("updMedRegPrv").value=="" || document.getElementById("updMedRegPrv").value==undefined){
+            //we don't check the value and assume that if the admin doesn't enter a value, the province has not changed
+            document.getElementById("upd_form").submit();
+        }else{
+                    $.ajax({
+                        type: "POST",
+                        url: '/birthprovince',
+                        contentType:'application/json',
+                        data: JSON.stringify({medRegPrv: document.getElementById("updMedRegPrv").value}),
+                    })
+                    .done(function(data, textStatus, xhr){
+                        //console.log(data); /*prints the message provided by the server*/
+                        //console.log(textStatus); /*prints "success"*/
+                        //console.log (xhr); /*prints xhr object*/
+                        //console.log(xhr.status); /*prints success code (e.g. 200)*/
+                        document.getElementById("upd_form").submit();                        
+                    })
+                    .fail(function(textStatus){
+                        //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                        //console.log(textStatus);  /*prints the Object*/
+                        console.log("Check the province")
+                    });
+                }
+    
+
+                   
+        }

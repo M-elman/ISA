@@ -20,7 +20,7 @@
       <div class="collapse navbar-collapse text-center justify-content-end" id="navbar2SupportedContent">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="#MyContactList"><i class="fa d-inline fa-lg fa-address-book-o"></i> My Contacts</a>
+            <a class="nav-link" href="#MyContactList" onclick="document.getElementById('MyContactList').style.display='';"><i class="fa d-inline fa-lg fa-address-book-o"></i> My Contacts</a>
           </li>
         </ul>
         <div class="btn-group">
@@ -28,7 +28,7 @@
           <div class="dropdown-menu">
             <a class="dropdown-item" href="#docSearch">Check doctor</a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="./user message page.html" target="_blank">Message received</a>
+            <a class="dropdown-item" href="./user_message_page.html" target="_blank">Message received</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" data-target="#NewContactModal" data-toggle="modal" style="cursor: pointer">Add new contact</a>
           </div>
@@ -49,103 +49,53 @@
       <div class="row">
         <div class="col-md-6">
           <div class="row">
-            <div class="col-md-6">
-              <h1 class="text-white">Utente</h1>
-            </div>
-            <div class="col-md-6">
-              <h1 class="text-white" id="usr"></h1>
+            <div class="col-md-9">
+              <h1 class="text-white">User page</h1>
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6"> immagine/logo</div>
-            <div class="col-md-6"> </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <h3 class="text-white">Ci sono o non ci sono nuovi messaggi urgenti</h3>
+          <div class="row" id="inbox message">
+            <div class="col-md-9 my-1">
+              <h4 class="text-white">Ci sono nuovi messaggi urgenti</h4>
             </div>
-            <div class="col-md-6">
-              <a class="btn btn-danger" href="">Leggi</a>Da far apparire insieme alla scritta solo in caso di messaggi non letti presenti </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="container" id="cliInfo">
-            <div class="row">
-              <div class="col-md-12">
-                <h2 class="text-warning">Nome e cognome (sezione dati anagrafici utente)</h2>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h4 class="text-white">Tax code</h4>
-              </div>
-              <div class="col-md-6">
-                <h5 class="text-black" id="cliCodeVal">valore </h5>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h4 class="text-white">Birthdate</h4>
-              </div>
-              <div class="col-md-6">
-                <h5 class="text-black" id="cliBirthdateVal">valore </h5>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h4 class="text-white">Place of birth</h4>
-              </div>
-              <div class="col-md-6">
-                <h5 class="text-black" id="cliPlaceVal">valore</h5>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h4 class="text-white" id="cliSpecialtiesVal">Patologie??</h4>
-              </div>
-              <div class="col-md-6">
-                <h5 class="text-black">valore eventualmente con una lista</h5>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h4 class="text-white">E-mail</h4>
-              </div>
-              <div class="col-md-6">
-                <h5 class="text-black" id="emailVal">valore </h5>
-              </div>
+            <div class="col-md-3">
+              <a class="btn btn-danger" href="./user_message_page.html" target="_blank">Leggi</a>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="py-5 bg-primary">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="row">
+          <div class="row" id="no inbox message">
             <div class="col-md-12">
-              <h1 class="text-white">My contact</h1>
+              <h3 class="text-white">Non ci sono nuovi messaggi urgenti</h3>
             </div>
           </div>
-          <div>
-            <h2 style="display:">No contact in your list(display:) nel caso sia vuota , di default andrà messo display:none</h2>
-            <h3>Your relative list *nome cognome numero di telefono/mail* lista non numerata costruita a partire da un json</h3>
-            <ul>
-              <li></li>
-            </ul>
+        </div>
+        <div class="col-md-6"> immagine </div>
+      </div>
+      <div class="py-5 bg-primary" id="MyContactList" style="display:none">
+        <div class="row">
+          <div class="col-md-9">
+            <h1 class="text-white">My contact</h1>
+          </div>
+          <div class="col-md-3 text-right">
+            <a href="" class="btn btn-danger" onclick="document.getElementById('MyContactList').style.display='none';">×</a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div>
+              <h2 style="display:">No contact in your list(display:) nel caso sia vuota , di default andrà messo display:none</h2>
+              <h3>Your relative list *nome cognome numero di telefono/mail* lista non numerata costruita a partire da un json</h3>
+              <ul>
+                <li></li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="py-5 bg-primary" id="Doctor_section">
-    <!--in style display:none da modificare premendo sul bottone e contemporaneamente svuotando i campi della sezione visualizzata -->
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="container" id="docSearch">
+      <!--<div class="py-5 bg-primary" id="Doctor_section">-->
+      <!--in style display:none da modificare premendo sul bottone e contemporaneamente svuotando i campi della sezione visualizzata -->
+      <div class="py-5 bg-primary" div="" id="docSearch">
+        <div class="row">
+          <div class="col-md-6">
+            <!--<div class="container" id="docSearch">-->
             <div class="row">
               <div class="col-md-12">
                 <div>
@@ -169,7 +119,6 @@
                     <button class="btn btn-primary" onclick="createTableFromJSON(document.getElementById('findDoc').value)">Search</button>
                   </div>
                 </div>
-                <div class="row"></div>
               </div>
             </div>
             <div class="row">
@@ -177,62 +126,64 @@
                 <div id="search_results"> Lista, al focus acquired dalla barra di ricerca svuota e nascondi i campi del dottore</div>
               </div>
             </div>
+            <!--</div>-->
           </div>
-        </div>
-        <div class="col-md-6">
-          <div class="container" id="docInfo" style="display: none">
-            <div class="row">
-              <div class="col-md-12">
-                <h2 class="text-warning" id="nameSurnameVal"></h2>
+          <div class="col-md-6">
+            <div class="container" id="docInfo" style="display:none ">
+              <div class="row">
+                <div class="col-md-6">
+                  <h2 class="text-warning" id="nameSurnameVal"></h2>
+                </div>
+                <div class="col-md-6">
+                  <h2 class="text-warning" id="nameSurnameVal"></h2>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h4 class="text-white">Iscrizione</h4>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4 class="text-white">Iscrizione</h4>
+                </div>
+                <div class="col-md-6">
+                  <h5 class="text-black" id="codeVal"> </h5>
+                </div>
               </div>
-              <div class="col-md-6">
-                <h5 class="text-black" id="codeVal"> </h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4 class="text-white">Birthdate</h4>
+                </div>
+                <div class="col-md-6">
+                  <h5 class="text-black" id="birthdateVal"> </h5>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h4 class="text-white">Birthdate</h4>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4 class="text-white">Place of birth</h4>
+                </div>
+                <div class="col-md-6">
+                  <h5 class="text-black" id="placeVal"></h5>
+                </div>
               </div>
-              <div class="col-md-6">
-                <h5 class="text-black" id="birthdateVal"> </h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4 class="text-white" id="specialtiesVal">Specialties</h4>
+                </div>
+                <div class="col-md-6">
+                  <h5 class="text-black">
+                    <ul id="specialtiesList"> </ul>
+                  </h5>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h4 class="text-white">Place of birth</h4>
-              </div>
-              <div class="col-md-6">
-                <h5 class="text-black" id="placeVal"></h5>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h4 class="text-white" id="specialtiesVal">Specialties</h4>
-              </div>
-              <div class="col-md-6">
-                <h5 class="text-black">
-                    <ul id="specialtiesList">
-
-                    </ul>
-
-                </h5>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h4 class="text-white">E-mail</h4> consentire una volta trovato il dottore di poterne aggiornare i dati o addirittura eliminarlo dalla piattaforma </div>
-              <div class="col-md-6">
-                <h5 class="text-black" id="emailVal"> </h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4 class="text-white">E-mail</h4> consentire una volta trovato il dottore di poterne aggiornare i dati o addirittura eliminarlo dalla piattaforma </div>
+                <div class="col-md-6">
+                  <h5 class="text-black" id="emailVal"> </h5>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <!--</div>-->
     </div>
   </div>
   <div class="py-5 text-white bg-white">
@@ -290,55 +241,66 @@
                 <div class="form-group">
                   <input type="text" name="relativeTel" class="form-control" placeholder="Telephone/email"> </div>
                 <!--<button class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#ErrorLoginModal">Login</button>-->
-                <button class="btn btn-primary">Add</button><label>All field are required</label> </form>
+                <div class="row">
+                  <div class="col-md-3">
+                    <button class="btn btn-primary">Add</button>
+                  </div>
+                  <div class="col-md-4">
+                    <h6 class="my-2 text-success" style="display:">Relative added!</h6>
+                  </div>
+                  <div class="col-md-5 text-right">
+                    <h6 class="my-2">
+                      <a href="#">Clear the fields</a>
+                    </h6>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
-    <div class="modal" id="userInfoModal">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3 class="modal-title" id="profileNS"></h3>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="row">
-                  <div class="col-md-6">
-                    <h4 class="text-secondary">Tax code</h4>
-                  </div>
-                  <div class="col-md-6">
-                    <h6 class="text-black" id="profileTC"></h6>
-                  </div>
+  <div class="modal" id="userInfoModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="profileNS"></h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-6">
+                  <h4 class="text-secondary">Tax code</h4>
                 </div>
-                <div class="row">
-                  <div class="col-md-6">
-                    <h4 class="text-secondary">Birthdate</h4>
-                  </div>
-                  <div class="col-md-6">
-                    <h6 class="text-black" id="profileBD"></h6>
-                  </div>
+                <div class="col-md-6">
+                  <h6 class="text-black" id="profileTC"></h6>
                 </div>
-                <div class="row">
-                  <div class="col-md-6">
-                    <h4 class="text-secondary">Place of birth</h4>
-                  </div>
-                  <div class="col-md-6">
-                    <h6 class="text-black" id="profileBP"></h6>
-                  </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4 class="text-secondary">Birthdate</h4>
                 </div>
-                <div class="row">
-                  <div class="col-md-6">
-                    <h4 class="text-secondary">E-mail</h4>
-                  </div>
-                  <div class="col-md-6">
-                    <h6 class="text-black" id="profileMail"></h6>
-                  </div>
+                <div class="col-md-6">
+                  <h6 class="text-black" id="profileBD"></h6>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4 class="text-secondary">Place of birth</h4>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="text-black" id="profileBP"></h6>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4 class="text-secondary">E-mail</h4>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="text-black" id="profileMail"></h6>
                 </div>
               </div>
             </div>
@@ -346,8 +308,9 @@
         </div>
       </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 </body>
 
 </html>

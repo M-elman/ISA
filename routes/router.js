@@ -4,7 +4,9 @@ var User = require('../models/userSchema');
 var Admin = require('../models/adminSchema');
 var path = require('path');
 var nodemailer = require('nodemailer');
-const catastalCodes = require('../models/catastal-codes.json')
+const catastalCodes = require('../models/catastal-codes.json');
+const medical_specialties = require('../models/medical_specialties.json');
+
   
 
 
@@ -216,6 +218,78 @@ router.post('/register', function (req, res, next) {
       
   })
 
+  //POST route for updating doctor
+router.post('/updatedoc', function (req, res, next) {
+  
+    var userData = {
+          isDoctor: true,
+          username: req.body.username,
+          password: req.body.password,
+          email: req.body.email,
+          name: req.body.name.toLowerCase(),
+          surname: req.body.surname.toLowerCase(), //useful to efficiently query the collection
+          birthdate: req.body.birthdate,
+          birthTown: req.body.birthTown,
+          birthProvince: req.body.birthProvince.toUpperCase(),
+          gender: req.body.gender,
+          medicalRegisterProvince: req.body.medRegPrv.toUpperCase(),
+          medicalRegisterNumber: req.body.medRegNum,
+          /*medicalSpecialties:*/
+        }
+        if (req.body.specialties==undefined || req.body.specialties==""){
+          userData.medicalSpecialties=null;
+        }
+        else{
+          userData.medicalSpecialties=new Array();
+          for (let s of req.body.specialties) {
+    
+            userData.medicalSpecialties.push(s);
+          }
+        }
+        
+  
+    
+    
+    User.create(userData, function (error, user) {
+          if (error) {
+            return next(error);
+          } else {
+            req.session.userId = user._id;
+              res.send("OK");
+            //return res.redirect('/profile');
+          }
+        });
+        
+     var transporter = nodemailer.createTransport({
+      service: 'gmail',
+      secure: true,
+      auth: {
+        user: 'fastalert.healthmonitoring@gmail.com',
+        pass: 'tf7nb39uj1'
+      },
+       tls: {
+            rejectUnauthorized: false
+        }
+    });
+    
+    var mailOptions = {
+      from: 'fastalert.healthmonitoring@gmail.com',
+      to: req.body.email,
+      subject: 'Welcome to FAHM',
+      text: 'Bienvenu doctor!'
+    };
+    
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });    
+        
+        
+    })
+
 //check if a username already exists
 router.post('/username', function (req, res, next) {
 User.findOne({ username: req.body.username })
@@ -265,7 +339,7 @@ router.post('/maid', function (req, res, next) {
   })
 
 
-  router.post('/birthprovince', function (req, res, next) {console.log("1111");
+  router.post('/birthprovince', function (req, res, next) {
     
     if (req.body.medRegPrv==""){
         res.setHeader('content-type', 'application/json');
@@ -321,6 +395,10 @@ router.post('/birthplace', function (req, res, next) {
     }
     
 })
+
+router.get('/specialties', function (req, res, next) {
+  res.status(200).json(medical_specialties);
+});
 
 
 router.get('/searchdoctor', function (req, res, next) {

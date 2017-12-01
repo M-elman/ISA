@@ -2,6 +2,7 @@
 <html>
 
 <head>
+  <title>FAHM</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
@@ -20,7 +21,7 @@
         aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
       <div class="collapse navbar-collapse text-center justify-content-end" id="navbar2SupportedContent">
         <ul class="navbar-nav"></ul>
-        <a class="btn navbar-btn ml-2 text-white btn-secondary" data-toggle="modal" data-target="#LoginModal"><i class="fa d-inline fa-lg fa-user-circle-o"></i> Log in</a>
+        <a class="btn navbar-btn ml-2 text-white btn-secondary" data-toggle="modal" data-target="#LoginModal" style="cursor:pointer"><i class="fa d-inline fa-lg fa-user-circle-o" style="cursor:pointer"></i> Log in</a>
       </div>
     </div>
   </nav>
@@ -58,8 +59,8 @@
                 <div class="form-group"> <label>Confirm password</label>
                   <input type="password" name="confirm_password" id="confirm_password" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="comparePwds()"> <label id="confirm_password_err" style="color:red; visibility:hidden"><b>These passwords don't match - </b> Try again?</label></div>
                 <div class="form-group"> <label>E-mail</label>
-                  <input type="email" name="email" id="email" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkMail();"> <label id="email_err" style="color:red;visibility:hidden"> <b>Please enter a valid email address - </b> Probably you are missing a @ sign</label> </div>               
-                </div>
+                  <input type="email" name="email" id="email" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkMail();"> <label id="email_err" style="color:red;visibility:hidden"> <b>Please enter a valid email address - </b> Probably you are missing a @ sign</label> </div>
+              </div>
               <div class="col-md-6">
                 <div class="row">
                   <div class="col-md-6">
@@ -82,7 +83,7 @@
                   </div>
                 </div>
                 <div class="form-group"> <label>Birthdate (use the format "yyyy-mm-dd")</label>
-                  <input type="text" placeholder="yyyy-mm-dd" name="birthdate" id="birthdate" class="form-control" required=""  onfocus="resetFieldError(this.id);" onblur="checkDate()"> <label id="birthdate_err" style="color:red;visibility:hidden"><b>Please enter a valid date - </b> You should use the format yyyy-mm-dd</label></div>
+                  <input type="text" placeholder="yyyy-mm-dd" name="birthdate" id="birthdate" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkDate()"> <label id="birthdate_err" style="color:red;visibility:hidden"><b>Please enter a valid date - </b> You should use the format yyyy-mm-dd</label></div>
                 <div class="form-group"> <label>Gender</label> <select name="gender" id="gender" class="form-control" required="">
   									<option value="M">M</option>
   										<option value="F">F</option>
@@ -92,7 +93,7 @@
               </div>
             </div>
           </form>
-          <button class="btn btn-primary" id="subSignUp" onclick="checkRegistration('reg_form')">Submit</button>
+          <button class="btn btn-primary" id="subSignUp" onclick="checkRegistration('reg_form')" style="cursor:pointer">Submit</button>
         </div>
       </div>
     </div>

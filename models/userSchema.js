@@ -62,7 +62,13 @@ var UserSchema = new mongoose.Schema({
     type: [String],
     sparse: true,
     default: undefined //to overwrite the array default value that is [] (empty array)
-  }
+  },
+  conditions: {
+    type: [String],
+    sparse: true,
+    default: undefined //to overwrite the array default value that is [] (empty array)
+  },
+
     
 });
 

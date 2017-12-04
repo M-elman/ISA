@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/userSchema');
 var Admin = require('../models/adminSchema');
+var Relative = require('../models/relativeSchema');
 var path = require('path');
 var nodemailer = require('nodemailer');
 const catastalCodes = require('../models/catastal-codes.json');
@@ -108,6 +109,8 @@ var userData = {
       birthProvince: req.body.birthProvince.toUpperCase(),
       gender: req.body.gender,
       taxCode: req.body.taxCode.toUpperCase(),
+      conditions: null,
+      
     }
 
 
@@ -228,6 +231,75 @@ router.post('/register', function (req, res, next) {
       
   })
 
+  //POST route for adding a new doctor
+router.post('/addrelative', function (req, res, next) {
+  
+  var relativePatient = "default";
+  User.findOne({ username: req.body.relativePatientUsername })
+  .exec(function (error, user) {
+     if (error) {
+       return next(error);
+     }  else {
+       console.log(user)
+
+          var relativeData = {
+            name: req.body.relativeName.toLowerCase(),
+            surname: req.body.relativeSurname.toLowerCase(),
+            email: req.body.relativeMail,
+            phone: req.body.relativePhone,
+            patientTaxCode: user.taxCode,
+            patientName: user.name,
+            patientSurname: user.surname,
+          }
+          console.log(relativeData);
+  
+      Relative.create(relativeData, function (error, relative) {
+            if (error) {
+              return next(error);
+            } else {
+                res.status(200).send("OK");
+            }
+          });
+          
+       var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        secure: true,
+        auth: {
+          user: 'fastalert.healthmonitoring@gmail.com',
+          pass: 'tf7nb39uj1'
+        },
+         tls: {
+              rejectUnauthorized: false
+          }
+      });
+      
+      var mailOptions = {
+        from: 'fastalert.healthmonitoring@gmail.com',
+        to: req.body.relativeMail,
+        subject: 'Welcome to FAHM',
+        text: 'Bienvenu' + relativeData.name + " " + relativeData.surname + "! Your relative " + relativeData.patientName + " " + relativeData.patientSurname + " has just registered you as his/her ICE contact in our fantastic application! Congratulations!"
+      };
+      
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });    
+
+
+
+     }
+
+   
+})
+
+    
+        
+        
+    })
+
   //POST route for updating doctor
 router.post('/updatedoc', function (req, res, next) {
   if(req.body.updMedRegPrv!=="" && req.body.updMedRegPrv!==undefined){
@@ -274,6 +346,41 @@ router.post('/updatedoc', function (req, res, next) {
       });
 
 
+    })
+
+      //POST route for updating patient
+router.post('/updatepat', function (req, res, next) {
+
+      var emptyArray=new Array();
+      User.findOneAndUpdate({ taxCode: req.body.pat_taxcode }, { $set: { conditions: emptyArray  }}, function(err, usr){
+        if (err) {return res.send(500, { error: err });}
+        else{
+          if (req.body.updDiseasesPat !=="" && req.body.updDiseasesPat!==undefined ){
+            
+              if(req.body.updDiseasesPat.constructor !== Array){
+                User.findOneAndUpdate({ taxCode: req.body.pat_taxcode }, { $push: { conditions: req.body.updDiseasesPat }}, function(err, usr){
+                if (err) {return res.send(500, { error: err });}
+                else{
+                  res.status(200).send("OK");                  
+                }
+                });
+              }else{
+                for (let disease of req.body.updDiseasesPat) {
+                  User.findOneAndUpdate({ taxCode: req.body.pat_taxcode }, { $push: { conditions: disease  }}, function(err, usr){
+                    if (err) return res.send(500, { error: err });
+                  });
+                  }
+                  res.status(200).send("OK");
+            }
+          }
+          else{
+            res.status(200).send("OK");
+            
+          }
+
+        }
+      });
+      
     })
 
 //check if a username already exists
@@ -462,8 +569,7 @@ router.get('/searchpatient', function (req, res, next) {
       });
     }else if  (req.query.patientSurname === undefined && req.query.patientTaxCode !== undefined){
       //query mongoDB and return answer
-      //AGGIUNGI PATOLOGIE ALLA QUERY
-      var selectedFields = 'name surname birthdate birthTown birthProvince gender taxCode';
+      var selectedFields = 'name surname birthdate birthTown birthProvince gender taxCode conditions';
       User.findOne({ 'taxCode': req.query.patientTaxCode}, selectedFields)
         .exec(function (err, user) {
         if (err) {

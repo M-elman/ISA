@@ -623,18 +623,18 @@ function populatePatientOutline(){
             document.getElementById("birthdateVal").innerHTML=data["birthdate"];
             document.getElementById("placeVal").innerHTML=data["birthTown"] + " (" + data["birthProvince"] + ")";
             document.getElementById("codeVal").innerHTML=data["taxCode"];            
-            /*
-            var ul=document.getElementById("specialtiesList");
+            
+            var ul=document.getElementById("diseasesList");
             while (ul.firstChild) { //empties old elements of the list
                 ul.removeChild(ul.firstChild);
             }
-            for (var i = 0; i < data["medicalSpecialties"].length; i++){
+            for (var i = 0; i < data["conditions"].length; i++){
                 var li = document.createElement('li');
                 li.setAttribute('class','item');
-                li.innerHTML=data["medicalSpecialties"][i];
+                li.innerHTML=data["conditions"][i];
                 ul.appendChild(li);
             }
-            */
+            
             document.getElementById("patInfo").style.display="";   
             
     
@@ -746,7 +746,7 @@ function getUserData(){
     }
 
     function loadDiseases(isUpdating, selectID){
-        document.getElementById("pat_id").value=document.getElementById("codeVal").innerHTML;
+        document.getElementById("pat_taxcode").value=document.getElementById("codeVal").innerHTML;
         if(isUpdating==true){
             var currentDiseases = [];
             $('#diseasesList li').each(function(){

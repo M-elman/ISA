@@ -1,0 +1,18 @@
+[   
+    {"disease": "Car"},
+    {"disease": "Train"},
+    {"disease": "Plane"},
+    {"disease": "Bus"},
+    {"disease": "Snowcat"},
+    {"disease": "Boat"},
+    {"disease": "Spaceship"},
+    {"disease": "Helicopter"},
+    {"disease": "Balloon"},
+    {"disease": "Bicycle"},
+    {"disease": "Motocycle"},
+    {"disease": "Submarine"},
+    {"disease": "Tram"},
+    {"disease": "Van"},
+    {"disease": "Tractor"},
+    {"disease": "Ambulance"}
+]

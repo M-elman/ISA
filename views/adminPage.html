@@ -80,7 +80,7 @@
                   <div class="col-md-9">
                     <input type="text" id="findDoc" class="form-control" required=""> </div>
                   <div class="col-md-3">
-                    <button class="btn btn-primary" onclick="createTableFromJSON(document.getElementById('findDoc').value)">Search</button>
+                    <button class="btn btn-primary" onclick="createDoctorsTableFromJSON(document.getElementById('findDoc').value)">Search</button>
                   </div>
                 </div>
                 <div class="row"></div>
@@ -141,7 +141,7 @@
                   <button class="btn btn-primary"  onclick="loadSpecialties(true,'updSpecialtiesDoc');" data-target="#updDocModal" data-toggle="modal">Modify doctor</button>
               </div>
               <div class="col-md-6">
-                  <button class="btn btn-primary" onclick="">Drop doctor</button>                  
+                  <button class="btn btn-primary" onclick="dropDoctor();">Drop doctor</button>                  
               </div>
             </div>
           </div>
@@ -210,7 +210,7 @@
                 </div>
                 <div class="form-group">
                   <h4 class="text-white">Medical specialties</h4>
-                  <h5 class="text">Select select the specialties you have achieved</h5> <select name="specialties" id="specialties" multiple="multiple">
+                  <h5 class="text">Select the specialties you have achieved</h5> <select name="specialties" id="specialties" multiple="multiple">
                 </select> </div>
               </div>
             </div>

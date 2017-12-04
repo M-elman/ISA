@@ -6,6 +6,9 @@ var path = require('path');
 var nodemailer = require('nodemailer');
 const catastalCodes = require('../models/catastal-codes.json');
 const medical_specialties = require('../models/medical_specialties.json');
+const disorders = require('../models/disorders.json');
+
+var mubsub = require('mubsub')
 
   
 
@@ -54,9 +57,11 @@ if (req.body.logusername && req.body.logpassword) {
       } else {
         req.session.userId = user._id;
         if(user.isDoctor==true){
-          return res.send("Doctor is in");
-          //return res.redirect('/doctorPage');
+          subscribeQueue();
+          //return res.send("Doctor is in");
+          return res.cookie('userID', user._id.toHexString()).redirect('/doctorPage');
         }else{
+          subscribeQueue();   
           return res.redirect('/clientPage');
         }
       }
@@ -262,6 +267,15 @@ router.post('/updatedoc', function (req, res, next) {
       
     })
 
+    router.post('/dropdoc', function (req, res, next) {
+      User.remove({ 'medicalRegisterNumber': req.body.doctorID}, function (err) {
+        if(err) {console.log(err); return res.status(400).send(err)}
+        else return res.status(200).send("OK");
+      });
+
+
+    })
+
 //check if a username already exists
 router.post('/username', function (req, res, next) {
 User.findOne({ username: req.body.username })
@@ -372,6 +386,10 @@ router.get('/specialties', function (req, res, next) {
   res.status(200).json(medical_specialties);
 });
 
+router.get('/diseases', function (req, res, next) {
+  res.status(200).json(disorders);
+});
+
 
 router.get('/searchdoctor', function (req, res, next) {
 
@@ -416,6 +434,51 @@ router.get('/searchdoctor', function (req, res, next) {
   
 
 });
+
+router.get('/searchpatient', function (req, res, next) {
+  
+    if (req.query.patientSurname !== undefined && req.query.patientTaxCode === undefined)  {
+      var surname = req.query.patientSurname; 
+      //query mongoDB and return answer
+      var selectedFields = 'name surname birthdate taxCode';
+      User.find({ 'surname': surname.toLowerCase(), 'isDoctor': false }, selectedFields)
+        .exec(function (err, docs) {
+        // docs is an array
+        if (err) {
+          return next(err);
+        } else {
+            if (docs.length==0) {
+              return res.status(404).send("No patients found. Please check the input and specify the complete surname. ");
+            }
+            else{
+            var data = [];
+            for (var i = 0; i < docs.length; i++) {
+              data.push(docs[i]);
+            }
+            return res.status(200).json(data);
+          }
+          
+        }
+      });
+    }else if  (req.query.patientSurname === undefined && req.query.patientTaxCode !== undefined){
+      //query mongoDB and return answer
+      //AGGIUNGI PATOLOGIE ALLA QUERY
+      var selectedFields = 'name surname birthdate birthTown birthProvince gender taxCode';
+      User.findOne({ 'taxCode': req.query.patientTaxCode}, selectedFields)
+        .exec(function (err, user) {
+        if (err) {
+          return next(err);
+        } else {      
+         
+            return res.status(200).json(user);
+          
+        }
+      });
+  
+    }
+    
+  
+  });
 
 router.get('/getusername', function (req, res, next) {
   
@@ -463,12 +526,30 @@ router.get('/clientPage', function (req, res, next) {
       if (error) {
         return next(error);
       } else {      
-        if (user === null) {     
+        if (user === null || user.isDoctor==true) {     
           var err = new Error('Not authorized! Go back!');
           err.status = 400;
           return next(err);
         } else {
           return res.sendFile(path.join(__dirname + '/../views/clientPage.html'));
+        }
+      }
+    });
+});
+
+// GET route after registering
+router.get('/doctorPage', function (req, res, next) {
+  User.findById(req.session.userId)
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {      
+        if (user === null || user.isDoctor==false) {     
+          var err = new Error('Not authorized! Go back!');
+          err.status = 400;
+          return next(err);
+        } else {
+          return res.sendFile(path.join(__dirname + '/../views/doctorPage.html'));
         }
       }
     });
@@ -506,5 +587,13 @@ router.get('/logout', function (req, res, next) {
     });
   }
 });
+
+function subscribeQueue(){
+  var client = mubsub('mongodb://localhost/userData');
+  var channel = client.channel('testQ');
+  //client.on(error, console.log(error));
+  //channel.on(error, console.log(error));
+  channel.subscribe('document', function(){console.log("ricevuto")});
+}
 
 module.exports = router;

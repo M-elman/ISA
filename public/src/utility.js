@@ -414,7 +414,7 @@ function showError(id){
 }
 
 //create doctor's table
-function createTableFromJSON(doctorSurname) {
+function createDoctorsTableFromJSON(doctorSurname) {
 
     $.ajax({
         type: "GET",
@@ -488,6 +488,79 @@ function createTableFromJSON(doctorSurname) {
 
 }
 
+function createPatientsTableFromJSON(patientSurname) {
+    
+        $.ajax({
+            type: "GET",
+            url: '/searchpatient',
+            data: {
+                patientSurname: patientSurname
+            },
+        })
+        .done(function(data, textStatus, xhr){
+            //data contains the patients array provided by the server*/
+           
+            // EXTRACT VALUE FOR HTML HEADER. 
+            var col = [];
+            col.push('name');
+            col.push('surname');
+            col.push('birthdate');
+            col.push('taxCode');
+            
+            // CREATE DYNAMIC TABLE.
+            var table = document.createElement("table");
+        
+            // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+        
+            var tr = table.insertRow(-1);                   // TABLE ROW.
+        
+            for (var i = 0; i < col.length; i++) {
+                var th = document.createElement("th");      // TABLE HEADER.
+                th.innerHTML = col[i];
+                tr.appendChild(th);
+            }
+        
+            // ADD JSON DATA TO THE TABLE AS ROWS.
+            for (var i = 0; i < data.length; i++) {
+        
+                tr = table.insertRow(-1);
+        
+                for (var j = 0; j < col.length; j++) {
+                    var tabCell = tr.insertCell(-1); //inserisce la cella alla fine della riga
+                    tabCell.innerHTML = data[i][col[j]];
+                }
+    
+                var tabCell = tr.insertCell(-1);
+                var btn = document.createElement('input');
+                btn.type = "button";
+                btn.className = "btn";
+                btn.value = "Show";
+                btn.style="cursor: pointer"
+                btn.id = data[tr.rowIndex-1].taxCode;
+                //btn.onclick = populateDoctorOutline();
+                tabCell.appendChild(btn);
+                btn.addEventListener("click", populatePatientOutline);  
+            }
+        
+            // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+            var divContainer = document.getElementById("search_results");
+            divContainer.innerHTML = "";
+            divContainer.appendChild(table);
+    
+    
+    
+        })
+        .fail(function(textStatus){
+            //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+            //console.log(textStatus);  /*prints the Object*/
+            var divContainer = document.getElementById("search_results");        
+            divContainer.innerHTML = textStatus.responseText;
+        });
+    
+    
+    
+    }
+
 
 function populateDoctorOutline(){
 
@@ -531,6 +604,48 @@ function populateDoctorOutline(){
 
     
 }
+
+function populatePatientOutline(){
+    
+        var patientTaxCode=this.id;
+        $.ajax({
+            type: "GET",
+            url: '/searchpatient',
+            data: {
+                patientTaxCode: patientTaxCode
+            },
+        })
+        .done(function(data, textStatus, xhr){
+            //data contains the doctor profile provided by the server*/
+ 
+            document.getElementById("nameSurnameVal").innerHTML=data["name"] + " " + data["surname"];
+            document.getElementById("genderVal").innerHTML=data["gender"];           
+            document.getElementById("birthdateVal").innerHTML=data["birthdate"];
+            document.getElementById("placeVal").innerHTML=data["birthTown"] + " (" + data["birthProvince"] + ")";
+            document.getElementById("codeVal").innerHTML=data["taxCode"];            
+            /*
+            var ul=document.getElementById("specialtiesList");
+            while (ul.firstChild) { //empties old elements of the list
+                ul.removeChild(ul.firstChild);
+            }
+            for (var i = 0; i < data["medicalSpecialties"].length; i++){
+                var li = document.createElement('li');
+                li.setAttribute('class','item');
+                li.innerHTML=data["medicalSpecialties"][i];
+                ul.appendChild(li);
+            }
+            */
+            document.getElementById("patInfo").style.display="";   
+            
+    
+        })
+        .fail(function(textStatus){
+            //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+            //console.log(textStatus);  /*prints the Object*/
+        });
+    
+        
+    }
 
 function getUsername(){
 
@@ -630,6 +745,47 @@ function getUserData(){
 
     }
 
+    function loadDiseases(isUpdating, selectID){
+        document.getElementById("pat_id").value=document.getElementById("codeVal").innerHTML;
+        if(isUpdating==true){
+            var currentDiseases = [];
+            $('#diseasesList li').each(function(){
+                currentDiseases.push($(this).text());
+            });
+        }
+
+        $.ajax({
+            type: "GET",
+            url: '/diseases',
+        })
+        .done(function(data, textStatus, xhr){
+
+
+            var parentSelect = document.getElementById(selectID);
+            while (parentSelect.firstChild) { //empties old elements of the list
+                parentSelect.removeChild(parentSelect.firstChild);
+            }
+            for (var i = 0; i < data.length; i++) {
+                var opt = document.createElement("option");      // TABLE HEADER.
+                opt.innerHTML = data[i].disease;
+                opt.value = data[i].disease;
+                if (isUpdating==true && $.inArray(data[i].disease, currentDiseases) != -1){
+                    //we are updating specialties and the current retrieved specialty is already got by the doctor
+                    opt.selected = true;
+                }
+                parentSelect.appendChild(opt);
+            }
+            $('#'+selectID).multiselect('rebuild');
+            
+        })
+        .fail(function(textStatus){
+            //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+            //console.log(textStatus);  /*prints the Object*/
+            
+        });
+
+    }
+
     function checkUpdate(){
         if(document.getElementById("updMedRegPrv").value=="" || document.getElementById("updMedRegPrv").value==undefined){
             //we don't check the value and assume that if the admin doesn't enter a value, the province has not changed
@@ -657,4 +813,27 @@ function getUserData(){
     
 
                    
+        }
+
+        function dropDoctor(){
+            var myString=document.getElementById("codeVal").innerHTML;
+            var medRegID=myString.substring(myString.indexOf(".")+1);
+            $.ajax({
+                type: "POST",
+                url: '/dropdoc',
+                contentType:'application/json',                
+                data: JSON.stringify({doctorID: medRegID})
+            })
+            .done(function(data, textStatus, xhr){
+                //console.log(data); /*prints the message provided by the server*/
+                //console.log(textStatus); /*prints "success"*/
+                //console.log (xhr); /*prints xhr object*/
+                //console.log(xhr.status); /*prints success code (e.g. 200)*/
+                                  
+            })
+            .fail(function(textStatus){
+                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                //console.log(textStatus);  /*prints the Object*/
+
+            });
         }

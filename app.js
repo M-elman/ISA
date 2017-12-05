@@ -4,9 +4,9 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
+var Event = require('./models/event_alertSchema');
 var amqp = require('amqplib');
 var mongoDbQueue = require('mongodb-queue');
-var mubsub = require('mubsub')
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
@@ -103,16 +103,22 @@ app.listen(1337, function () {
           console.log(" [x] Received '%s'", msg.content.toString());
     var obj = JSON.parse(msg.content.toString());
     console.log(" [x] Received ID '%s'", obj.event.metaData.id_utente);
-    // QUI BISOGNA AGGIUNGERE IL MESSAGGIO SULLA CODA DELL?UTENTE SU MONGO DB
-/*     queue.add(JSON.stringify(obj.event.payloadData), function(err, id){
-      if(err) console.log(err);
-    }); */
-    var publisher = mubsub('mongodb://localhost/userData');
-    var channel = publisher.channel('testQ');
-    //client.on(error, console.log(error));
-    //channel.on(error, console.log(error));
-    channel.publish('document', {event: JSON.stringify(obj.event.payloadData)});
-    //io.volatile.emit('notification', JSON.stringify(obj));
+
+    var eventAlert = {
+      idDoc: obj.event.metaData["id_doctor"],
+      metadata: JSON.stringify(obj.event.metaData),
+      payload: JSON.stringify(obj.event.payloadData),
+    }
+
+    Event.create(eventAlert, function (error, event) {
+      if (error) {
+        console.log(error);
+      }
+      else {
+        console.log("Published event for", obj.event.metaData["id_doctor"]);
+      }
+    });
+
     
     if(clients.length > 0){
       var recipient;

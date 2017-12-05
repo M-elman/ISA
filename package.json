@@ -19,7 +19,6 @@
     "mongodb": "^2.2.33",
     "mongodb-queue": "^3.1.0",
     "mongoose": "^4.13.1",
-    "mubsub": "^1.4.0",
     "nodemailer": "^4.4.0",
     "nodemon": "^1.11.0",
     "socket.io": "^2.0.4",

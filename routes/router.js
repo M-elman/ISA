@@ -3,13 +3,12 @@ var router = express.Router();
 var User = require('../models/userSchema');
 var Admin = require('../models/adminSchema');
 var Relative = require('../models/relativeSchema');
+var Event = require('../models/event_alertSchema');
 var path = require('path');
 var nodemailer = require('nodemailer');
 const catastalCodes = require('../models/catastal-codes.json');
 const medical_specialties = require('../models/medical_specialties.json');
 const disorders = require('../models/disorders.json');
-
-var mubsub = require('mubsub')
 
   
 
@@ -58,11 +57,9 @@ if (req.body.logusername && req.body.logpassword) {
       } else {
         req.session.userId = user._id;
         if(user.isDoctor==true){
-          subscribeQueue();
           //return res.send("Doctor is in");
           return res.cookie('userID', user._id.toHexString()).redirect('/doctorPage');
         }else{
-          subscribeQueue();   
           return res.redirect('/clientPage');
         }
       }
@@ -586,6 +583,40 @@ router.get('/searchpatient', function (req, res, next) {
   
   });
 
+  router.get('/getmessages', function (req, res, next) {
+    
+    User.findOne({ username: req.query.doc_username, 'isDoctor': true }, '_id')
+    .exec(function (error, user) {
+       if (error) {
+         return next(error);
+       }  else {
+         console.log(user._id.toHexString());
+         Event.find({ 'idDoc': user._id.toHexString()})
+         .exec(function (err, docs) {
+         // docs is an array
+         if (err) {
+           return next(err);
+         } else {
+/*              if (docs.length==0) {
+               return res.status(404).send("Doctor not found. Please check the input and specify the complete surname. ");
+             } */
+            //  else{
+             var data = [];
+             for (var i = 0; i < docs.length; i++) {
+               data.push(docs[i]);
+             }
+             return res.status(200).json(data);
+           //}
+           
+         }
+       });
+
+       }
+
+      });
+    
+    });
+
 router.get('/getusername', function (req, res, next) {
   
   User.findById(req.session.userId)
@@ -680,6 +711,24 @@ router.get('/adminPage', function (req, res, next) {
     });
 });
 
+
+router.get('/eventsPage', function (req, res, next) {
+  User.findById(req.session.userId)
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {      
+        if (user === null || user.isDoctor==false) {     
+          var err = new Error('Not authorized! Go back!');
+          err.status = 400;
+          return next(err);
+        } else {
+          return res.sendFile(path.join(__dirname + '/../views/CEPEventsPage.html'));
+        }
+      }
+    });
+});
+
 // GET for logout
 router.get('/logout', function (req, res, next) {
   if (req.session) {
@@ -694,12 +743,5 @@ router.get('/logout', function (req, res, next) {
   }
 });
 
-function subscribeQueue(){
-  var client = mubsub('mongodb://localhost/userData');
-  var channel = client.channel('testQ');
-  //client.on(error, console.log(error));
-  //channel.on(error, console.log(error));
-  channel.subscribe('document', function(){console.log("ricevuto")});
-}
 
 module.exports = router;

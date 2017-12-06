@@ -38,7 +38,8 @@ router.get('/', function (req, res, next) {
       } else {
         //gestisci se è dottore e se è admin
         //non si potrebbe fare redirect anzichè sendFile?
-        return res.sendFile(path.join(__dirname + '/../views/clientPage.html'));
+        if (user.isDoctor==true) return res.sendFile(path.join(__dirname + '/../views/doctorPage.html'));
+        else return res.sendFile(path.join(__dirname + '/../views/clientPage.html'));
       }
     }
   });
@@ -584,13 +585,12 @@ router.get('/searchpatient', function (req, res, next) {
   });
 
   router.get('/getmessages', function (req, res, next) {
-    
+    console.log(req.query.doc_username)
     User.findOne({ username: req.query.doc_username, 'isDoctor': true }, '_id')
     .exec(function (error, user) {
        if (error) {
          return next(error);
        }  else {
-         console.log(user._id.toHexString());
          Event.find({ 'idDoc': user._id.toHexString()})
          .exec(function (err, docs) {
          // docs is an array
@@ -616,6 +616,23 @@ router.get('/searchpatient', function (req, res, next) {
       });
     
     });
+
+
+    router.get('/getevent', function (req, res, next) {
+          
+          Event.findById(req.query.eventID)
+          .exec(function (err, event) {
+          // docs is an array
+          if (err) {
+            return next(err);
+          } else {
+              return res.status(200).json(event);
+            
+          }
+        });
+          
+      });
+    
 
 router.get('/getusername', function (req, res, next) {
   
@@ -652,6 +669,23 @@ router.get('/getusername', function (req, res, next) {
     });    
     
     });
+
+    router.get('/getpatientdata', function (req, res, next) {
+      User.findById(req.query.patientID)
+      .exec(function (error, user) {
+        if (error) {
+          return next(error);
+        } else {      
+          if (user === null) {     
+            //impossible
+            return next(err);
+          } else {
+            return res.json(user);
+          }
+        }
+      });    
+      
+      });
 
 
 

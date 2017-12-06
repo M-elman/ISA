@@ -562,7 +562,8 @@ function createPatientsTableFromJSON(patientSurname) {
     }
 
 
-function populateDoctorOutline(){
+
+    function populateDoctorOutline(){
 
     var doctorID=this.id;
     $.ajax({
@@ -605,6 +606,87 @@ function populateDoctorOutline(){
     
 }
 
+
+
+
+
+function createEventTable(doc_username) {
+    
+        $.ajax({
+            type: "GET",
+            url: '/getmessages',
+            data: {
+                doc_username: doc_username
+            },
+        })
+        .done(function(data, textStatus, xhr){
+            //data contains the doctor array provided by the server*/
+           
+            // EXTRACT VALUE FOR HTML HEADER. 
+            // (id name surname birthdate birthTown birthProvince gender medicalRegisterProvince medicalRegisterNumber medicalSpecialties)
+            var col = [];
+            col.push('Date');
+            col.push('Patient');
+            col.push('Event');
+            
+            // CREATE DYNAMIC TABLE.
+            var table = document.createElement("table");
+        
+            // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+        
+            var tr = table.insertRow(-1);                   // TABLE ROW.
+        
+            for (var i = 0; i < col.length; i++) {
+                var th = document.createElement("th");      // TABLE HEADER.
+                th.innerHTML = col[i];
+                tr.appendChild(th);
+            }
+        
+            // ADD JSON DATA TO THE TABLE AS ROWS.
+            for (var i = 0; i < data.length; i++) {
+        
+                tr = table.insertRow(-1);
+                tr.className = "clickable-row";
+                tr.style = "cursor: pointer;";
+                tr.addEventListener("click", populateEventModal);
+                tr.id = data[i]._id.toHexString();
+                
+                var ev=JSON.parse(data[i].metadata);
+
+                var tabCell = tr.insertCell(-1);
+                tabCell.innerHTML = ev["timestamp"];
+                var tabCell = tr.insertCell(-1);
+                tabCell.innerHTML = getParameterByName('name', ev["id_utente"]) + " " + getParameterByName('surname', ev["id_utente"]);
+                var tabCell = tr.insertCell(-1);
+                tabCell.innerHTML = ev["operation_type"];
+    
+                
+            }
+        
+            // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+            var divContainer = document.getElementById("search_results");
+            divContainer.innerHTML = "";
+            divContainer.appendChild(table);
+    
+    
+    
+        })
+        .fail(function(textStatus){
+            //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+            //console.log(textStatus);  /*prints the Object*/
+            var divContainer = document.getElementById("search_results");        
+            divContainer.innerHTML = textStatus.responseText;
+        });
+    
+    
+    
+    }
+
+
+
+
+
+
 function populatePatientOutline(){
     
         var patientTaxCode=this.id;
@@ -646,6 +728,83 @@ function populatePatientOutline(){
     
         
     }
+
+    function populateEventModal(){
+        
+            var eventID=this.id;
+            $.ajax({
+                type: "GET",
+                url: '/getevent',
+                data: {
+                    eventID: eventID
+                },
+            })
+            .done(function(data, textStatus, xhr){
+                //data contains the doctor profile provided by the server*/
+
+                var ev_meta=JSON.parse(data.metadata);
+                var ev_payload=JSON.parse(data.payload);
+                var patientID = ev_meta["id_utente"].substring(0, ev_meta["id_utente"].indexOf("?"));
+
+                document.getElementById("time").innerHTML=ev_meta["timestamp"];
+                document.getElementById("category").innerHTML=ev_meta["operation_type"];
+                document.getElementById("systolic").innerHTML=ev_payload["systolic_pressure"];    
+                document.getElementById("diastolic").innerHTML=ev_payload["diastolic_pressure"];    
+                document.getElementById("bpm").innerHTML=ev_payload["heart_rate"];    
+                
+
+                $.ajax({
+                    type: "GET",
+                    url: '/getpatientdata',
+                    data: {
+                        patientID: patientID
+                    },
+                })
+                .done(function(data, textStatus, xhr){
+                    //data contains the user data provided by the server*/
+                        
+                })
+                .fail(function(textStatus){
+                    //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                    //console.log(textStatus);  /*prints the Object*/
+                });
+
+
+
+
+
+
+
+
+
+
+                       
+                document.getElementById("birthdateVal").innerHTML=data["birthdate"];
+                document.getElementById("placeVal").innerHTML=data["birthTown"] + " (" + data["birthProvince"] + ")";
+                document.getElementById("codeVal").innerHTML=data["taxCode"];            
+                
+                var ul=document.getElementById("diseasesList");
+                while (ul.firstChild) { //empties old elements of the list
+                    ul.removeChild(ul.firstChild);
+                }
+                for (var i = 0; i < data["conditions"].length; i++){
+                    var li = document.createElement('li');
+                    li.setAttribute('class','item');
+                    li.innerHTML=data["conditions"][i];
+                    ul.appendChild(li);
+                }
+                
+                document.getElementById("patInfo").style.display="";   
+                
+        
+            })
+            .fail(function(textStatus){
+                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                //console.log(textStatus);  /*prints the Object*/
+            });
+        
+            
+        }
 
 function getUsername(){
 
@@ -836,4 +995,23 @@ function getUserData(){
                 //console.log(textStatus);  /*prints the Object*/
 
             });
+        }
+
+        function buildCEPpage(){
+            getUsername();
+            $.ajax({
+                type: "GET",
+                url: '/getusername',
+            })
+            .done(function(data, textStatus, xhr){
+                //data contains the username*/
+                createEventTable(data);                                
+        
+            })
+            .fail(function(textStatus){
+                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                //console.log(textStatus);  /*prints the Object*/
+            });
+            
+
         }

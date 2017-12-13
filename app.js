@@ -11,6 +11,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
 var clients =[];
+var port = process.env.PORT || 5000;
 
 server.listen(8002);
 io.sockets.on('connection', function(socket){
@@ -37,7 +38,8 @@ io.sockets.on('connection', function(socket){
 })
 
 //connect to MongoDB
-mongoose.connect('mongodb://localhost/userData', { useMongoClient: true });
+mongoose.connect('mongodb://mongiello:mongiello@ds137246.mlab.com:37246/userdata', { useMongoClient: true });
+//mongoose.connect('mongodb://localhost/userData', { useMongoClient: true });
 var db = mongoose.connection;
 
 
@@ -88,8 +90,11 @@ app.use(function (err, req, res, next) {
 
 
 // listen on port 1337
-app.listen(1337, function () {
-  console.log('Express app listening on port 1337');
+app.listen(port, function () {
+//app.listen(1337, function () {
+
+  console.log('ciao');
+  //console.log('Express app listening on port ' + port);
 
  
 

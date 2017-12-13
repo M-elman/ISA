@@ -9,24 +9,21 @@
   <!--<link href="./bootstrap.min.css" rel="stylesheet">-->
   <link rel="stylesheet" type="text/css" href="./bootstrap-multiselect.css">
   <script src="/src/utility.js"></script>
+  <style>
+    table.table th {
+      color: #007bff;
+    }
+  </style>
 </head>
 
 <body class="bg-dark">
   <nav class="navbar navbar-expand-md bg-primary navbar-dark">
     <div class="container">
-      <a class="navbar-brand" href="#"><i class="fa d-inline fa-lg fa-briefcase"></i><b>&nbsp;FAHM<br></b></a>
+      <a class="navbar-brand" href="/"><i class="fa d-inline fa-lg fa-briefcase"></i><b>&nbsp;FAHM<br></b></a>
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar2SupportedContent" aria-controls="navbar2SupportedContent" aria-expanded="false"
         aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
       <div class="collapse navbar-collapse text-center justify-content-end" id="navbar2SupportedContent">
         <ul class="navbar-nav"></ul>
-        <div class="btn-group">
-          <button class="btn navbar-btn ml-2 text-white btn-secondary dropdown-toggle" data-toggle="dropdown"> Menu </button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">Action</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Separated link</a>
-          </div>
-        </div>
         <a class="btn navbar-btn ml-2 text-white btn-secondary" href="/logout"><i class="fa d-inline fa-lg fa-external-link-square"></i>&nbsp;Log out</a>
       </div>
     </div>
@@ -34,23 +31,29 @@
   <div class="py-5" style="background-color:#C0C0C0;">
     <div class="container">
       <div class="row">
-        <div class="col-md-6">
-          <div class="row">
-            <div class="col-md-12">
-              <h1 class="text" style="color: black;">Admin menu</h1>
-              <h3>Choose what you want to do</h3>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="btn-group">
-                <a href="#Registration_section" class="btn btn-outline-primary">Insert a new doctor</a>
-                <a href="#Doctor_section" class="btn btn-outline-primary">Show the doctors list</a>
-              </div>
-            </div>
+        <div class="col-md-4">
+          <h1 class="text-secondary">Admin tools</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h5 class="text-white">In this page you can register a new doctor to the platform, search for an existing doctor and update his/her specialties and working province.</h5>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="btn-group">
+            <a href="#Registration_section" class="btn btn-outline-primary">Insert a new doctor</a>
+            <a href="#Doctor_section" class="btn btn-outline-primary">Show the doctors list</a>
           </div>
         </div>
-        <div class="col-md-6"> inserire immagine </div>
+      </div>
+      <div class="row" style="visibility:hidden">
+        <h1>SPACE</h1>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <img class="img-fluid d-block mx-auto mb-5" src="admin.png"> </div>
       </div>
     </div>
   </div>
@@ -63,14 +66,14 @@
             <div class="row">
               <div class="col-md-12">
                 <div>
-                  <h1 class="text-white">Doctor's section</h1>
+                  <h1 class="text-white">Doctors management</h1>
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-md-12">
                 <div id="div_del_componente_liquid">
-                  <h3 class="text">Type the doctor's surname or his codice</h3>
+                  <h3 class="text">Search by doctor's surname</h3>
                 </div>
               </div>
             </div>
@@ -83,12 +86,12 @@
                     <button class="btn btn-primary" onclick="createDoctorsTableFromJSON(document.getElementById('findDoc').value)">Search</button>
                   </div>
                 </div>
-                <div class="row"></div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12">
-                <div id="search_results"> Lista, al focus acquired dalla barra di ricerca svuota e nascondi i campi del dottore</div>
+                <div class="row" style="visibility:hidden">space</div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div id="search_results"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -130,18 +133,16 @@
               </div>
               <div class="col-md-6">
                 <h5 class="text-black">
-                  <ul id="specialtiesList">
-                    
-                  </ul>
+                  <ul id="specialtiesList"> </ul>
                 </h5>
               </div>
             </div>
             <div class="row">
               <div class="col-md-6">
-                  <button class="btn btn-primary"  onclick="loadSpecialties(true,'updSpecialtiesDoc');" data-target="#updDocModal" data-toggle="modal">Modify doctor</button>
+                <button class="btn btn-primary" onclick="loadSpecialties(true,'updSpecialtiesDoc');" data-target="#updDocModal" data-toggle="modal">Modify doctor</button>
               </div>
               <div class="col-md-6">
-                  <button class="btn btn-primary" onclick="dropDoctor();">Drop doctor</button>                  
+                <button class="btn btn-primary" onclick="dropDoctor();">Drop doctor</button>
               </div>
             </div>
           </div>
@@ -154,7 +155,7 @@
       <div class="row">
         <div class="col-md-12" id="Registration_form">
           <h1 class="text-gray-dark">Doctor registration form</h1>
-          <p class="lead mb-4">Complete all the fields below to insert a new doctor in the platform database.</p>
+          <p class="lead mb-4">Complete all the fields below to insert a new doctor into the platform.</p>
         </div>
       </div>
       <form id="doc_form" class="" method="post" action="/register">
@@ -266,7 +267,7 @@
       </div>
     </div>
   </div>
-  <div class="py-5 text-white bg-light">
+  <div class="py-5 text-white bg-white">
     <div class="container">
       <div class="row">
         <div class="col-md-9"> </div>
@@ -277,7 +278,7 @@
       <div class="row">
         <div class="col-md-6 mt-3 text-center">
           <img class="img-fluid d-block my-1 mx-auto py-3" src="Logo.jpg"> </div>
-        <div class="col-md-6 mt-3 text-center bg-light">
+        <div class="col-md-6 mt-3 text-center bg-white">
           <p class="lead text-center text-dark my-5" style="font-size:160%;"><b class="">More results with faster consultations.</b></p>
         </div>
       </div>
@@ -290,25 +291,25 @@
         </div>
         <div class="col-md-6">
           <div class="row">
-            <div class="col-md-4 bg-light"><i class="fa fa-fw fa-3x fa-heartbeat text-center text-dark mx-5 py-4"></i></div>
-            <div class="col-md-4 bg-light"><i class="fa fa-fw fa-3x fa-user-md mx-5 text-dark py-4"></i></div>
-            <div class="col-md-4 bg-light"><i class="fa fa-fw fa-3x fa-universal-access mx-5 text-dark py-4"></i></div>
+            <div class="col-md-4 bg-white"><i class="fa fa-fw fa-3x fa-heartbeat text-center text-dark mx-5 py-4"></i></div>
+            <div class="col-md-4 bg-white"><i class="fa fa-fw fa-3x fa-user-md mx-5 text-dark py-4"></i></div>
+            <div class="col-md-4 bg-white"><i class="fa fa-fw fa-3x fa-universal-access mx-5 text-dark py-4"></i></div>
           </div>
         </div>
       </div>
     </div>
   </div>
   <div class="modal" id="updDocModal">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3 class="modal-title">Update doctor's profile</h3>            
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
-          </div>
-          <div class="modal-body">
-            <form id="upd_form" class="" method="post" action="/updatedoc">
-            
-              <h4 class="text-secondary">Medical Association n. </h4><input type="text" name="doc_id" id="doc_id" readonly></input>
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Update doctor's profile</h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+        </div>
+        <div class="modal-body">
+          <form id="upd_form" class="" method="post" action="/updatedoc">
+            <h4 class="text-secondary">Medical Association n. </h4>
+            <input type="text" name="doc_id" id="doc_id" readonly="">
             <div class="row">
               <div class="col-md-12">
                 <div class="row">
@@ -316,7 +317,7 @@
                     <div class="form-group">
                       <h4 class="text-secondary">Province</h4>
                       <input type="text" name="updMedRegPrv" id="updMedRegPrv" maxlength="2" class="form-control text-uppercase" required="" onblur="checkMedRegPrv(this.id);" onfocus="resetFieldError(this.id);"> <label id="updMedRegPrv_err" style="color:red;visibility:hidden"><b>Please enter a valid province</b></label> </div>
-                    </div>
+                  </div>
                   <div class="col-md-6">
                     <div class="form-group">
                       <h4 class="text-secondary">Medical specialties</h4>
@@ -337,19 +338,51 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-6">
-                  </div>
+                  <div class="col-md-6"> </div>
                 </div>
               </div>
             </div>
           </form>
-          <button type="submit" class="btn btn-dark" onclick="checkUpdate();">Submit</button>          
+          <button type="submit" class="btn btn-dark" onclick="checkUpdate();">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="SuccessfulRegistrationModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-secondary">THE SIGN UP PROCEDURE HAS BEEN TERMINATED!</h5>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-9">
+              <h5>The page will be reloaded automatically.</h5>
+            </div>
+            <div class="col-md-3"> <i class="fa d-inline fa-3x text-primary fa-check"></i></div>
           </div>
         </div>
       </div>
     </div>
-
-
+  </div>
+  <div class="modal" id="SuccessfulDropModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-secondary">DOCTOR'S PROFILE SUCCESSFULLY DROPPED</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-9">
+              <h5>Close the modal to return to your work.</h5>
+            </div>
+            <div class="col-md-3"> <i class="fa d-inline fa-3x text-primary fa-check"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <!--
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> 
 	-->
@@ -368,13 +401,15 @@
             enableFiltering: true,
             filterBehavior: 'value',
             includeFilterClearBtn: false,
-            includeSelectAllOption: false
+            includeSelectAllOption: false,
+            enableCaseInsensitiveFiltering: true
         });
         $('#updSpecialtiesDoc').multiselect({
             enableFiltering: true,
             filterBehavior: 'value',
             includeFilterClearBtn: false,
-            includeSelectAllOption: false
+            includeSelectAllOption: false,
+            enableCaseInsensitiveFiltering: true
         });
 
     });

@@ -9,7 +9,6 @@ var nodemailer = require('nodemailer');
 const catastalCodes = require('../models/catastal-codes.json');
 const medical_specialties = require('../models/medical_specialties.json');
 const disorders = require('../models/disorders.json');
-
   
 
 
@@ -52,9 +51,10 @@ if (req.body.logusername && req.body.logpassword) {
 
     User.authenticate(req.body.logusername, req.body.logpassword, function (error, user) {
       if (error || !user) {
-        var err = new Error('Wrong email or password.');
-        err.status = 401;
-        return next(err);
+        //var err = new Error('Wrong email or password.');
+        //err.status = 401;
+        //return next(err);
+        return res.redirect('/loginError');
       } else {
         req.session.userId = user._id;
         if(user.isDoctor==true){
@@ -66,9 +66,10 @@ if (req.body.logusername && req.body.logpassword) {
       }
     });
   } else {
-    var err = new Error('All fields required.');
-    err.status = 400;
-    return next(err);
+    //var err = new Error('All fields required.');
+    //err.status = 400;
+    //return next(err);
+    return res.redirect('/loginError');
   }
 })
 
@@ -78,20 +79,27 @@ router.post('/admin_login', function (req, res, next) {
   
       Admin.authenticate(req.body.adlogusername, req.body.adlogpassword, function (error, admin) {
         if (error || !admin) {
-          var err = new Error('Wrong email or password.');
-          err.status = 401;
-          return next(err);
+          //var err = new Error('Wrong email or password.');
+          //err.status = 401;
+          //return next(err);
+          return res.redirect('/loginError');
         } else {
           req.session.userId = admin._id;
           return res.redirect('/adminPage');
         }
       });
     } else {
-      var err = new Error('All fields required.');
-      err.status = 400;
-      return next(err);
+      //var err = new Error('All fields required.');
+      //err.status = 400;
+      //return next(err);
+      return res.redirect('/loginError');
     }
   })
+
+
+
+
+
 
 //POST route for adding a new user
 router.post('/signup', function (req, res, next) {
@@ -117,7 +125,8 @@ User.create(userData, function (error, user) {
         return next(error);
       } else {
         req.session.userId = user._id;
-          res.send("OK");
+          //res.send("OK");
+          res.redirect('/');
         //return res.redirect('/profile');
       }
     });
@@ -185,17 +194,11 @@ router.post('/register', function (req, res, next) {
           userData.medicalSpecialties.push(s);
         }
       }
-      
-
-  
-  
   User.create(userData, function (error, user) {
         if (error) {
           return next(error);
         } else {
-          req.session.userId = user._id;
-            res.send("OK");
-          //return res.redirect('/profile');
+          res.redirect('/');
         }
       });
       
@@ -238,8 +241,6 @@ router.post('/addrelative', function (req, res, next) {
      if (error) {
        return next(error);
      }  else {
-       console.log(user)
-
           var relativeData = {
             name: req.body.relativeName.toLowerCase(),
             surname: req.body.relativeSurname.toLowerCase(),
@@ -255,7 +256,7 @@ router.post('/addrelative', function (req, res, next) {
             if (error) {
               return next(error);
             } else {
-                res.status(200).send("OK");
+                res.redirect("/addRelativeSuccess");
             }
           });
           
@@ -275,7 +276,7 @@ router.post('/addrelative', function (req, res, next) {
         from: 'fastalert.healthmonitoring@gmail.com',
         to: req.body.relativeMail,
         subject: 'Welcome to FAHM',
-        text: 'Bienvenu' + relativeData.name + " " + relativeData.surname + "! Your relative " + relativeData.patientName + " " + relativeData.patientSurname + " has just registered you as his/her ICE contact in our fantastic application! Congratulations!"
+        text: 'Bienvenu ' + relativeData.name + " " + relativeData.surname + "! Your relative " + relativeData.patientName + " " + relativeData.patientSurname + " has just registered you as his/her ICE contact in our fantastic application! Congratulations!"
       };
       
       transporter.sendMail(mailOptions, function(error, info){
@@ -315,7 +316,7 @@ router.post('/updatedoc', function (req, res, next) {
                 User.findOneAndUpdate({ medicalRegisterNumber: req.body.doc_id }, { $push: { medicalSpecialties: req.body.updSpecialtiesDoc  }}, function(err, usr){
                 if (err) {return res.send(500, { error: err });}
                 else{
-                  res.status(200).send("OK");                  
+                  res.redirect("/modifyDoctorSuccess");             
                 }
                 });
               }else{
@@ -324,11 +325,11 @@ router.post('/updatedoc', function (req, res, next) {
                     if (err) return res.send(500, { error: err });
                   });
                   }
-                  res.status(200).send("OK");
-            }
+                  res.redirect("/modifyDoctorSuccess");             
+                }
           }
           else{
-            res.status(200).send("OK");
+            res.redirect("/modifyDoctorSuccess");             
             
           }
 
@@ -340,14 +341,15 @@ router.post('/updatedoc', function (req, res, next) {
     router.post('/dropdoc', function (req, res, next) {
       User.remove({ 'medicalRegisterNumber': req.body.doctorID}, function (err) {
         if(err) {console.log(err); return res.status(400).send(err)}
-        else return res.status(200).send("OK");
+        else return res.redirect("/modifyDoctorSuccess");             
+        
       });
 
 
     })
 
       //POST route for updating patient
-router.post('/updatepat', function (req, res, next) {
+    router.post('/updatepat', function (req, res, next) {
 
       var emptyArray=new Array();
       User.findOneAndUpdate({ taxCode: req.body.pat_taxcode }, { $set: { conditions: emptyArray  }}, function(err, usr){
@@ -359,7 +361,7 @@ router.post('/updatepat', function (req, res, next) {
                 User.findOneAndUpdate({ taxCode: req.body.pat_taxcode }, { $push: { conditions: req.body.updDiseasesPat }}, function(err, usr){
                 if (err) {return res.send(500, { error: err });}
                 else{
-                  res.status(200).send("OK");                  
+                  res.redirect("/modifyPatientSuccess");                
                 }
                 });
               }else{
@@ -368,11 +370,11 @@ router.post('/updatepat', function (req, res, next) {
                     if (err) return res.send(500, { error: err });
                   });
                   }
-                  res.status(200).send("OK");
+                  res.redirect("/modifyPatientSuccess");  
             }
           }
           else{
-            res.status(200).send("OK");
+            res.redirect("/modifyPatientSuccess");  
             
           }
 
@@ -540,6 +542,33 @@ router.get('/searchdoctor', function (req, res, next) {
 
 });
 
+
+router.get('/searchdoctorprofile', function (req, res, next) {
+  
+      var surname = req.query.doctorSurname; 
+      var username = req.query.username;
+      //query mongoDB and return answer
+      var selectedFields = 'name surname birthdate birthTown birthProvince gender medicalRegisterProvince medicalRegisterNumber medicalSpecialties';
+      User.findOne({ 'surname': surname.toLowerCase(), 'isDoctor': true, 'username': username }, selectedFields)
+        .exec(function (err, docs) {
+        // docs is an array
+        if (err) {
+          return next(err);
+        } else {
+            if (docs.length==0) {
+              return res.status(404).send("Doctor not found. Please check the input and specify the complete surname. ");
+            }
+            else{
+            return res.status(200).json(docs);
+          }
+          
+        }
+      });
+    
+    
+  
+  });
+
 router.get('/searchpatient', function (req, res, next) {
   
     if (req.query.patientSurname !== undefined && req.query.patientTaxCode === undefined)  {
@@ -652,6 +681,24 @@ router.get('/getusername', function (req, res, next) {
   
   });
 
+  router.get('/getsurname', function (req, res, next) {
+    
+    User.findById(req.session.userId)
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {      
+        if (user === null) {     
+          //impossible
+          return next(err);
+        } else {
+          return res.send(user.surname);
+        }
+      }
+    });    
+    
+    });
+
   router.get('/getuserdata', function (req, res, next) {
     var selectedFields = 'name surname birthdate birthTown birthProvince email taxCode';    
     User.findById(req.session.userId, selectedFields)
@@ -678,7 +725,7 @@ router.get('/getusername', function (req, res, next) {
         } else {      
           if (user === null) {     
             //impossible
-            return next(err);
+            return next(error);
           } else {
             return res.json(user);
           }
@@ -698,9 +745,10 @@ router.get('/clientPage', function (req, res, next) {
         return next(error);
       } else {      
         if (user === null || user.isDoctor==true) {     
-          var err = new Error('Not authorized! Go back!');
-          err.status = 400;
-          return next(err);
+          //var err = new Error('Not authorized! Go back!');
+          //err.status = 400;
+          //return next(err);
+          return res.redirect("/loginError");
         } else {
           return res.sendFile(path.join(__dirname + '/../views/clientPage.html'));
         }
@@ -716,9 +764,10 @@ router.get('/doctorPage', function (req, res, next) {
         return next(error);
       } else {      
         if (user === null || user.isDoctor==false) {     
-          var err = new Error('Not authorized! Go back!');
-          err.status = 400;
-          return next(err);
+          //var err = new Error('Not authorized! Go back!');
+          //err.status = 400;
+          //return next(err);
+          return res.redirect("/loginError");
         } else {
           return res.sendFile(path.join(__dirname + '/../views/doctorPage.html'));
         }
@@ -735,9 +784,10 @@ router.get('/adminPage', function (req, res, next) {
         return next(error);
       } else {
         if (user === null) {
-          var err = new Error('Not authorized! Go back!');
-          err.status = 400;
-          return next(err);
+          //var err = new Error('Not authorized! Go back!');
+          //err.status = 400;
+          //return next(err);
+          return res.redirect("/loginError");
         } else {
           return res.sendFile(path.join(__dirname + '/../views/adminPage.html'));
         }
@@ -753,9 +803,10 @@ router.get('/eventsPage', function (req, res, next) {
         return next(error);
       } else {      
         if (user === null || user.isDoctor==false) {     
-          var err = new Error('Not authorized! Go back!');
-          err.status = 400;
-          return next(err);
+          //var err = new Error('Not authorized! Go back!');
+          //err.status = 400;
+          //return next(err);
+          return res.redirect("/loginError");
         } else {
           return res.sendFile(path.join(__dirname + '/../views/CEPEventsPage.html'));
         }
@@ -777,5 +828,106 @@ router.get('/logout', function (req, res, next) {
   }
 });
 
+
+router.get('/getuserrelative', function (req, res, next) {
+  var selectedFields = 'name surname email phone';    
+  Relative.find({ 'patientTaxCode': req.query.patientTaxCode },selectedFields)
+  .exec(function (error, relatives) {
+
+    // relatives is an array
+    if (error) {
+      return next(error);
+    } else {
+        if (relatives.length==0) {
+          return res.status(404).send("Relatives not found.");
+        }
+        else{
+        var data = [];
+        for (var i = 0; i < relatives.length; i++) {
+          data.push(relatives[i]);
+        }
+        return res.status(200).json(data);
+      }
+      
+    }
+  });    
+  
+  });
+
+  router.get('/loginError', function (req, res, next) {
+    console.log(__dirname);
+    return res.sendFile(path.join(__dirname + '/../views/loginErrorPage.html'));
+  });
+
+  router.get('/addRelativeSuccess', function (req, res, next) {
+    return res.sendFile(path.join(__dirname + '/../views/addRelativeSuccess.html'));
+  });
+
+  router.get('/modifyPatientSuccess', function (req, res, next) {
+    return res.sendFile(path.join(__dirname + '/../views/modifyPatientSuccess.html'));
+  });
+
+  router.get('/modifyDoctorSuccess', function (req, res, next) {
+    return res.sendFile(path.join(__dirname + '/../views/modifyDoctorSuccess.html'));
+  });
+  
+
+  router.post('/sendemailtopatient', function (req, res, next) {
+    
+    var recipients=req.body.email;
+    Relative.find({ 'patientTaxCode': req.body.patientTaxCode })
+    .exec(function (error, relatives) {
+      
+      // relatives is an array
+      if (error) {
+        return next(error);
+      } else {
+          if (relatives.length==0) {
+          }
+          else{
+            for (var i = 0; i < relatives.length; i++) {
+              recipients=recipients+","+relatives[i].email;
+            }
+        
+        }  
+        
+        var transporter = nodemailer.createTransport({
+          service: 'gmail',
+          secure: true,
+          auth: {
+            user: 'fastalert.healthmonitoring@gmail.com',
+            pass: 'tf7nb39uj1'
+          },
+           tls: {
+                rejectUnauthorized: false
+            }
+        });
+        
+        console.log("recip",recipients);
+        var mailOptions = {
+          from: 'fastalert.healthmonitoring@gmail.com',
+          to: recipients,
+          subject: 'Health Alert ['+req.body.patientName+' '+req.body.patientSurname+']: '+ req.body.operationType + "!",
+          text: req.body.text
+        };
+        
+        transporter.sendMail(mailOptions, function(error, info){
+          if (error) {
+            console.log(error);
+            
+          } else {
+            console.log('Email sent: ' + info.response);
+            return res.json({success : "Updated Successfully", status : 200});
+          }
+        }); 
+      }
+
+    });
+        
+    });
+
+    router.get('/404err', function (req, res, next) {
+      return res.sendFile(path.join(__dirname + '/../views/404Page.html'));
+    });
 
 module.exports = router;

@@ -391,7 +391,8 @@ function checkRegistration(formID){
             }
             else {
                 console.log("Registering user...")
-                document.getElementById(formID).submit(); 
+                document.getElementById(formID).submit();
+                $('#SuccessfulRegistrationModal').modal('show');  
             }
         })
         .catch(function(error_msg) {
@@ -436,16 +437,20 @@ function createDoctorsTableFromJSON(doctorSurname) {
         
         // CREATE DYNAMIC TABLE.
         var table = document.createElement("table");
-    
+        table.setAttribute("class", "table text-white");
         // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
     
         var tr = table.insertRow(-1);                   // TABLE ROW.
     
         for (var i = 0; i < col.length; i++) {
             var th = document.createElement("th");      // TABLE HEADER.
-            th.innerHTML = col[i];
+            if(col[i].localeCompare("medicalRegisterProvince")==0){th.innerHTML ="Medical Register Province"}
+            else  th.innerHTML = col[i].charAt(0).toUpperCase() + col[i].slice(1);
             tr.appendChild(th);
         }
+        //NEEDED TO FILL THE HEADER LINES
+        var th = document.createElement("th"); 
+        tr.appendChild(th);
     
         // ADD JSON DATA TO THE TABLE AS ROWS.
         for (var i = 0; i < data.length; i++) {
@@ -454,7 +459,8 @@ function createDoctorsTableFromJSON(doctorSurname) {
     
             for (var j = 0; j < col.length; j++) {
                 var tabCell = tr.insertCell(-1); //inserisce la cella alla fine della riga
-                tabCell.innerHTML = data[i][col[j]];
+                if(j==2)tabCell.innerHTML = new Date(data[i][col[j]]).toLocaleDateString();
+                else tabCell.innerHTML = data[i][col[j]].charAt(0).toUpperCase()+data[i][col[j]].slice(1);
             }
 
             var tabCell = tr.insertCell(-1);
@@ -473,6 +479,8 @@ function createDoctorsTableFromJSON(doctorSurname) {
         var divContainer = document.getElementById("search_results");
         divContainer.innerHTML = "";
         divContainer.appendChild(table);
+        divContainer.style.display="";
+        
 
 
 
@@ -482,6 +490,7 @@ function createDoctorsTableFromJSON(doctorSurname) {
         //console.log(textStatus);  /*prints the Object*/
         var divContainer = document.getElementById("search_results");        
         divContainer.innerHTML = textStatus.responseText;
+        divContainer.style.display="";
     });
 
 
@@ -509,6 +518,8 @@ function createPatientsTableFromJSON(patientSurname) {
             
             // CREATE DYNAMIC TABLE.
             var table = document.createElement("table");
+            table.setAttribute("class", "table text-white");
+            
         
             // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
         
@@ -516,9 +527,12 @@ function createPatientsTableFromJSON(patientSurname) {
         
             for (var i = 0; i < col.length; i++) {
                 var th = document.createElement("th");      // TABLE HEADER.
-                th.innerHTML = col[i];
+                th.innerHTML = col[i].charAt(0).toUpperCase() + col[i].slice(1);
                 tr.appendChild(th);
             }
+            //NEEDED TO FILL THE HEADER LINES
+            var th = document.createElement("th"); 
+            tr.appendChild(th);
         
             // ADD JSON DATA TO THE TABLE AS ROWS.
             for (var i = 0; i < data.length; i++) {
@@ -527,7 +541,8 @@ function createPatientsTableFromJSON(patientSurname) {
         
                 for (var j = 0; j < col.length; j++) {
                     var tabCell = tr.insertCell(-1); //inserisce la cella alla fine della riga
-                    tabCell.innerHTML = data[i][col[j]];
+                    if(j==2)tabCell.innerHTML = new Date(data[i][col[j]]).toLocaleDateString();
+                    else tabCell.innerHTML = data[i][col[j]].charAt(0).toUpperCase() + data[i][col[j]].slice(1);
                 }
     
                 var tabCell = tr.insertCell(-1);
@@ -576,25 +591,30 @@ function createPatientsTableFromJSON(patientSurname) {
     .done(function(data, textStatus, xhr){
         //data contains the doctor profile provided by the server*/
         if(data["gender"]=="M"){
-            document.getElementById("nameSurnameVal").innerHTML="Dott. " + data["name"] + " " + data["surname"];
+            document.getElementById("nameSurnameVal").innerHTML="Dott. " + data["name"].charAt(0).toUpperCase() + data["name"].slice(1) + " " + data["surname"].charAt(0).toUpperCase() + data["surname"].slice(1);
             
         }else{
-            document.getElementById("nameSurnameVal").innerHTML="Dott.ssa " + data["name"] + " " + data["surname"];
+            document.getElementById("nameSurnameVal").innerHTML="Dott.ssa " + data["name"].charAt(0).toUpperCase() + data["name"].slice(1) + " " + data["surname"].charAt(0).toUpperCase() + data["surname"].slice(1);
         }
         document.getElementById("codeVal").innerHTML="Provincial Medical Association of " + data["medicalRegisterProvince"] + " n." + data["medicalRegisterNumber"];
-        document.getElementById("birthdateVal").innerHTML=data["birthdate"];
-        document.getElementById("placeVal").innerHTML=data["birthTown"] + " (" + data["birthProvince"] + ")";
+        document.getElementById("birthdateVal").innerHTML=new Date(data["birthdate"]).toLocaleDateString();
+        document.getElementById("placeVal").innerHTML=data["birthTown"].charAt(0).toUpperCase() + data["birthTown"].slice(1) + " (" + data["birthProvince"] + ")";
         var ul=document.getElementById("specialtiesList");
         while (ul.firstChild) { //empties old elements of the list
             ul.removeChild(ul.firstChild);
         }
+        if(data["medicalSpecialties"]!=null && data["medicalSpecialties"].length!=0){
         for (var i = 0; i < data["medicalSpecialties"].length; i++){
             var li = document.createElement('li');
             li.setAttribute('class','item');
             li.innerHTML=data["medicalSpecialties"][i];
             ul.appendChild(li);
         }
-    
+        }else{
+            ul.innerHTML="-";
+        }
+
+        $('#DoctorModal').modal('show'); 
         document.getElementById("docInfo").style.display="";   
 
     })
@@ -606,7 +626,70 @@ function createPatientsTableFromJSON(patientSurname) {
     
 }
 
+function showDoctorProfile(){
+    
+        var doctorSurname=document.getElementById('welcome_label_doctor').innerHTML.substring(15, document.getElementById('welcome_label_doctor').innerHTML.indexOf('!'));
+        doctorSurname=doctorSurname.charAt(0).toLowerCase()+doctorSurname.slice(1);
+        console.log(doctorSurname);
 
+        $.ajax({
+            type: "GET",
+            url: '/getusername',
+        })
+        .done(function(result, textStatus, xhr){
+            //result contains the username*/
+            var username=result;
+            $.ajax({
+                type: "GET",
+                url: '/searchdoctorprofile',
+                data: {
+                    doctorSurname: doctorSurname,
+                    username: username
+
+                },
+            })
+            .done(function(data, textStatus, xhr){
+                //data contains the doctor profile provided by the server*/
+                console.log(data);
+                if(data["gender"]=="M"){
+                    document.getElementById("nameSurnameValProfile").innerHTML="Dott. " + data["name"].charAt(0).toUpperCase() + data["name"].slice(1) + " " + data["surname"].charAt(0).toUpperCase() + data["surname"].slice(1);
+                    
+                }else{
+                    document.getElementById("nameSurnameValProfile").innerHTML="Dott.ssa " + data["name"].charAt(0).toUpperCase() + data["name"].slice(1) + " " + data["surname"].charAt(0).toUpperCase() + data["surname"].slice(1);
+                }
+                document.getElementById("codeValProfile").innerHTML="Provincial Medical Association of " + data["medicalRegisterProvince"] + " n." + data["medicalRegisterNumber"];
+                document.getElementById("birthdateValProfile").innerHTML=new Date(data["birthdate"]).toLocaleDateString();
+                document.getElementById("placeValProfile").innerHTML=data["birthTown"].charAt(0).toUpperCase() + data["birthTown"].slice(1) + " (" + data["birthProvince"] + ")";
+                var ul=document.getElementById("specialtiesListProfile");
+                while (ul.firstChild) { //empties old elements of the list
+                    ul.removeChild(ul.firstChild);
+                }
+                for (var i = 0; i < data["medicalSpecialties"].length; i++){
+                    var li = document.createElement('li');
+                    li.setAttribute('class','item');
+                    li.innerHTML=data["medicalSpecialties"][i];
+                    ul.appendChild(li);
+                }
+                $('#DoctorModalProfile').modal('show'); 
+                //document.getElementById("docInfo").style.display="";   
+        
+            })
+            .fail(function(textStatus){
+                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                //console.log(textStatus);  /*prints the Object*/
+            });
+                
+            
+    
+        })
+        .fail(function(textStatus){
+            //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+            //console.log(textStatus);  /*prints the Object*/
+        });
+    
+        
+    }
+    
 
 
 
@@ -631,6 +714,8 @@ function createEventTable(doc_username) {
             
             // CREATE DYNAMIC TABLE.
             var table = document.createElement("table");
+            table.setAttribute("class", "table text-white");
+            
         
             // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
         
@@ -638,23 +723,25 @@ function createEventTable(doc_username) {
         
             for (var i = 0; i < col.length; i++) {
                 var th = document.createElement("th");      // TABLE HEADER.
-                th.innerHTML = col[i];
+                th.innerHTML = col[i].charAt(0).toUpperCase() + col[i].slice(1);
                 tr.appendChild(th);
             }
         
             // ADD JSON DATA TO THE TABLE AS ROWS.
-            for (var i = 0; i < data.length; i++) {
+            var length=data.length -1;
+            for (var i = length; i>=0; i--) {
         
                 tr = table.insertRow(-1);
                 tr.className = "clickable-row";
                 tr.style = "cursor: pointer;";
                 tr.addEventListener("click", populateEventModal);
-                tr.id = data[i]._id.toHexString();
+                tr.id = data[i]["_id"];
+                //tr.id = data[i]._id.toHexString();
                 
                 var ev=JSON.parse(data[i].metadata);
 
                 var tabCell = tr.insertCell(-1);
-                tabCell.innerHTML = ev["timestamp"];
+                tabCell.innerHTML = new Date(ev["timestamp"].replace(/ /g,"")).toLocaleDateString("en-US",{day:"numeric", month:"short", year:"numeric", minute:"numeric", hour:"numeric"});
                 var tabCell = tr.insertCell(-1);
                 tabCell.innerHTML = getParameterByName('name', ev["id_utente"]) + " " + getParameterByName('surname', ev["id_utente"]);
                 var tabCell = tr.insertCell(-1);
@@ -699,25 +786,29 @@ function populatePatientOutline(){
         })
         .done(function(data, textStatus, xhr){
             //data contains the doctor profile provided by the server*/
- 
-            document.getElementById("nameSurnameVal").innerHTML=data["name"] + " " + data["surname"];
+            document.getElementById("nameSurnameVal").innerHTML=data["name"].charAt(0).toUpperCase()+data["name"].slice(1) + " " + data["surname"].charAt(0).toUpperCase()+data["surname"].slice(1);
             document.getElementById("genderVal").innerHTML=data["gender"];           
-            document.getElementById("birthdateVal").innerHTML=data["birthdate"];
-            document.getElementById("placeVal").innerHTML=data["birthTown"] + " (" + data["birthProvince"] + ")";
+            document.getElementById("birthdateVal").innerHTML=new Date(data["birthdate"]).toLocaleDateString();
+            document.getElementById("placeVal").innerHTML=data["birthTown"].charAt(0).toUpperCase()+data["birthTown"].slice(1) + " (" + data["birthProvince"] + ")";
             document.getElementById("codeVal").innerHTML=data["taxCode"];            
             
             var ul=document.getElementById("diseasesList");
             while (ul.firstChild) { //empties old elements of the list
                 ul.removeChild(ul.firstChild);
+                
             }
+            document.getElementById("diseasesTitle").style="display:none";
+            if(data["conditions"]!==null && data["conditions"]!==undefined){
             for (var i = 0; i < data["conditions"].length; i++){
                 var li = document.createElement('li');
                 li.setAttribute('class','item');
                 li.innerHTML=data["conditions"][i];
                 ul.appendChild(li);
+                document.getElementById("diseasesTitle").style="display:";
             }
-            
-            document.getElementById("patInfo").style.display="";   
+        }
+        $('#userInfoModal').modal('show');    
+        //document.getElementById("patInfo").style.display="";   
             
     
         })
@@ -730,8 +821,14 @@ function populatePatientOutline(){
     }
 
     function populateEventModal(){
+        document.getElementById("extra1").style="display:none";
+        document.getElementById("extra2").style="display:none";
+        document.getElementById("extra3").style="display:none";
+        document.getElementById("resultemail").innerHTML="";
+        document.getElementById("form_message").value="";
         
-            var eventID=this.id;
+
+        var eventID=this.id;
             $.ajax({
                 type: "GET",
                 url: '/getevent',
@@ -741,17 +838,33 @@ function populatePatientOutline(){
             })
             .done(function(data, textStatus, xhr){
                 //data contains the doctor profile provided by the server*/
-
                 var ev_meta=JSON.parse(data.metadata);
                 var ev_payload=JSON.parse(data.payload);
                 var patientID = ev_meta["id_utente"].substring(0, ev_meta["id_utente"].indexOf("?"));
-
-                document.getElementById("time").innerHTML=ev_meta["timestamp"];
-                document.getElementById("category").innerHTML=ev_meta["operation_type"];
+                var category=ev_meta["operation_type"];
+                document.getElementById("time").innerHTML=new Date(ev_meta["timestamp"]).toLocaleDateString("en-US",{day:"numeric", month:"short", minute:"numeric", hour:"numeric"});;
+                document.getElementById("category").innerHTML=category;
                 document.getElementById("systolic").innerHTML=ev_payload["systolic_pressure"];    
                 document.getElementById("diastolic").innerHTML=ev_payload["diastolic_pressure"];    
-                document.getElementById("bpm").innerHTML=ev_payload["heart_rate"];    
-                
+                document.getElementById("bpm").innerHTML=ev_payload["heart_rate"];
+                if(category=="Epileptic Attack"){
+                    document.getElementById("extra_label").innerHTML="Number of occurences ";
+                    document.getElementById("extra").innerHTML=ev_payload["number_of_events"];
+                    document.getElementById("extra1").style="display:"
+                }
+                else if(category=="Heart Attack"){
+
+                }
+                else if(category=="Hypoxic Attack"){
+                    
+                    document.getElementById("hemo").innerHTML=ev_payload["perc_sat_hemoglobin_last"];
+                    document.getElementById("mean_hemo").innerHTML=ev_payload["perc_sat_hemoglobin_middle"];
+                    document.getElementById("extra_label").innerHTML="Recent surgery ";
+                    document.getElementById("extra").innerHTML=ev_payload["recent_surgery"];
+                    document.getElementById("extra1").style="display:"
+                    document.getElementById("extra2").style="display:"
+                    document.getElementById("extra3").style="display:"
+                } 
 
                 $.ajax({
                     type: "GET",
@@ -762,40 +875,36 @@ function populatePatientOutline(){
                 })
                 .done(function(data, textStatus, xhr){
                     //data contains the user data provided by the server*/
+                    document.getElementById("name").innerHTML=data["name"].toUpperCase();
+                    document.getElementById("surname").innerHTML=data["surname"].toUpperCase();
+                    document.getElementById("birthdate").innerHTML=new Date(data["birthdate"]).toLocaleDateString('en-US',{day:'numeric', month:'short', year:"numeric"});
+                    document.getElementById("gender").innerHTML=data["gender"];
+                    document.getElementById("email").innerHTML=data["email"];
+                    document.getElementById("taxcode").innerHTML=data["taxCode"];
+
+                    var ul=document.getElementById("diseases");
+                    while (ul.firstChild) { //empties old elements of the list
+                        ul.removeChild(ul.firstChild);
+                    }
+                    
+                    if(data["conditions"]!==null && data["conditions"]!==undefined ){
+                        for (var i = 0; i < data["conditions"].length; i++){
+                            var li = document.createElement('li');
+                            li.setAttribute('class','item');
+                            li.innerHTML=data["conditions"][i];
+                            ul.appendChild(li);
+                        }
+                    }
+                        
+                    $('#EventModal').modal('show');
+                    
                         
                 })
                 .fail(function(textStatus){
                     //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
                     //console.log(textStatus);  /*prints the Object*/
                 });
-
-
-
-
-
-
-
-
-
-
                        
-                document.getElementById("birthdateVal").innerHTML=data["birthdate"];
-                document.getElementById("placeVal").innerHTML=data["birthTown"] + " (" + data["birthProvince"] + ")";
-                document.getElementById("codeVal").innerHTML=data["taxCode"];            
-                
-                var ul=document.getElementById("diseasesList");
-                while (ul.firstChild) { //empties old elements of the list
-                    ul.removeChild(ul.firstChild);
-                }
-                for (var i = 0; i < data["conditions"].length; i++){
-                    var li = document.createElement('li');
-                    li.setAttribute('class','item');
-                    li.innerHTML=data["conditions"][i];
-                    ul.appendChild(li);
-                }
-                
-                document.getElementById("patInfo").style.display="";   
-                
         
             })
             .fail(function(textStatus){
@@ -806,7 +915,93 @@ function populatePatientOutline(){
             
         }
 
-function getUsername(){
+
+
+        function populateEventModalNotification(data){
+            document.getElementById("extra1").style="display:none";
+            document.getElementById("extra2").style="display:none";
+            document.getElementById("extra3").style="display:none";
+            document.getElementById("resultemail").innerHTML="";
+            document.getElementById("form_message").value="";
+
+
+                    //data contains the doctor profile provided by the server*/
+                    var ev_meta=data.event.metaData;
+                    var ev_payload=data.event.payloadData ;
+                    var patientID = ev_meta["id_utente"].substring(0, ev_meta["id_utente"].indexOf("?"));
+                    var category=ev_meta["operation_type"];
+                    document.getElementById("time").innerHTML=new Date(ev_meta["timestamp"]).toLocaleDateString("en-US",{day:"numeric", month:"short", minute:"numeric", hour:"numeric"});;
+                    document.getElementById("category").innerHTML=category;
+                    document.getElementById("systolic").innerHTML=ev_payload["systolic_pressure"];    
+                    document.getElementById("diastolic").innerHTML=ev_payload["diastolic_pressure"];    
+                    document.getElementById("bpm").innerHTML=ev_payload["heart_rate"];
+                    if(category=="Epileptic Attack"){
+                        document.getElementById("extra_label").innerHTML="Number of occurences ";
+                        document.getElementById("extra").innerHTML=ev_payload["number_of_events"];
+                        document.getElementById("extra1").style="display:"
+                    }
+                    else if(category=="Heart Attack"){
+    
+                    }
+                    else if(category=="Hypoxic Attack"){
+                        
+                        document.getElementById("hemo").innerHTML=ev_payload["perc_sat_hemoglobin_last"];
+                        document.getElementById("mean_hemo").innerHTML=ev_payload["perc_sat_hemoglobin_middle"];
+                        document.getElementById("extra_label").innerHTML="Recent surgery ";
+                        document.getElementById("extra").innerHTML=ev_payload["recent_surgery"];
+                        document.getElementById("extra1").style="display:"
+                        document.getElementById("extra2").style="display:"
+                        document.getElementById("extra3").style="display:"
+                    } 
+    
+                    $.ajax({
+                        type: "GET",
+                        url: '/getpatientdata',
+                        data: {
+                            patientID: patientID
+                        },
+                    })
+                    .done(function(data, textStatus, xhr){
+                        //data contains the user data provided by the server*/
+                        document.getElementById("name").innerHTML=data["name"].toUpperCase();
+                        document.getElementById("surname").innerHTML=data["surname"].toUpperCase();
+                        document.getElementById("birthdate").innerHTML=new Date(data["birthdate"]).toLocaleDateString('en-US',{day:'numeric', month:'short', year:"numeric"});
+                        document.getElementById("gender").innerHTML=data["gender"];
+                        document.getElementById("email").innerHTML=data["email"];
+                        document.getElementById("taxcode").innerHTML=data["taxCode"];
+                        
+                        var ul=document.getElementById("diseases");
+                        while (ul.firstChild) { //empties old elements of the list
+                            ul.removeChild(ul.firstChild);
+                        }
+                        
+                        if(data["conditions"]!==null && data["conditions"]!==undefined ){
+                            for (var i = 0; i < data["conditions"].length; i++){
+                                var li = document.createElement('li');
+                                li.setAttribute('class','item');
+                                li.innerHTML=data["conditions"][i];
+                                ul.appendChild(li);
+                            }
+                        }
+                            
+                        $('#EventModal').modal('show');
+                        
+                            
+                    })
+                    .fail(function(textStatus){
+                        //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                        //console.log(textStatus);  /*prints the Object*/
+                    });
+                           
+            
+               
+            
+                
+            }
+    
+
+
+        function getUsername(){
 
     $.ajax({
         type: "GET",
@@ -827,6 +1022,25 @@ function getUsername(){
 
 }
 
+function getDoctorSurname(){
+    
+        $.ajax({
+            type: "GET",
+            url: '/getsurname',
+        })
+        .done(function(data, textStatus, xhr){
+            //data contains the username*/
+                document.getElementById("welcome_label_doctor").innerHTML="Welcome Dottor " + data.charAt(0).toUpperCase() + data.slice(1) + "!"; 
+    
+        })
+        .fail(function(textStatus){
+            //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+            //console.log(textStatus);  /*prints the Object*/
+        });
+    
+    
+    }
+
 function getUserData(){
     
         $.ajax({
@@ -837,7 +1051,7 @@ function getUserData(){
             //data contains the user data provided by the server*/
                 document.getElementById("profileNS").innerHTML=data["name"] + " " + data["surname"];
                 document.getElementById("profileTC").innerHTML=data["taxCode"];
-                document.getElementById("profileBD").innerHTML=data["birthdate"];
+                document.getElementById("profileBD").innerHTML=new Date(data["birthdate"]).toLocaleDateString();
                 document.getElementById("profileBP").innerHTML=data["birthTown"] + " (" + data["birthProvince"] + ")";
                 document.getElementById("profileMail").innerHTML=data["email"];
         })
@@ -988,6 +1202,13 @@ function getUserData(){
                 //console.log(textStatus); /*prints "success"*/
                 //console.log (xhr); /*prints xhr object*/
                 //console.log(xhr.status); /*prints success code (e.g. 200)*/
+                document.getElementById("docInfo").style.display="none"; 
+                document.getElementById("findDoc").value="";
+                document.getElementById("search_results").style.display="none";
+                $('#SuccessfulDropModal').modal('show');
+                
+
+
                                   
             })
             .fail(function(textStatus){
@@ -1012,6 +1233,109 @@ function getUserData(){
                 //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
                 //console.log(textStatus);  /*prints the Object*/
             });
+           
+        }
+
+        function populateRelativesOutline(){
             
 
+            $.ajax({
+                type: "GET",
+                url: '/getuserdata',
+            })
+            .done(function(data, textStatus, xhr){
+                //data contains the user data provided by the server*/
+                $.ajax({
+                    type: "GET",
+                    url: '/getuserrelative',
+                    data: {
+                        patientTaxCode: data["taxCode"]
+                    },
+                })
+                .done(function(data, textStatus, xhr){
+                    //data contains the relative data provided by the server*/
+                                    // EXTRACT VALUE FOR HTML HEADER. 
+                    // (name surname email phone )  
+                    var col = [];
+                    col.push('name');
+                    col.push('surname');
+                    col.push('email');
+                    col.push('phone');
+                    
+                    // CREATE DYNAMIC TABLE.
+                    var table = document.createElement("table");
+                    table.setAttribute("class", "table text-white");
+                
+                    // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+                
+                    var tr = table.insertRow(-1);                   // TABLE ROW.
+                
+                    for (var i = 0; i < col.length; i++) {
+                        var th = document.createElement("th");      // TABLE HEADER.
+                        th.innerHTML = col[i].charAt(0).toUpperCase() + col[i].slice(1);
+                        tr.appendChild(th);
+                    }
+                
+                    // ADD JSON DATA TO THE TABLE AS ROWS.
+                    for (var i = 0; i < data.length; i++) {
+                
+                        tr = table.insertRow(-1);
+                
+                        for (var j = 0; j < col.length; j++) {
+                            var tabCell = tr.insertCell(-1); //inserisce la cella alla fine della riga
+                            if(j==0 | j==1)tabCell.innerHTML = data[i][col[j]].charAt(0).toUpperCase()+data[i][col[j]].slice(1);
+                            else tabCell.innerHTML = data[i][col[j]];
+                        }
+            
+                    }
+                
+                    // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+                    var divContainer = document.getElementById("contactList");
+                    divContainer.innerHTML = "";
+                    divContainer.appendChild(table);
+                    document.getElementById("MyContactList").style.display=""; 
+                    
+                    })
+                .fail(function(textStatus){
+                    //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                    //console.log(textStatus);  /*prints the Object*/
+                    $('#c_alert').modal("show");
+                    //alert("No relative into your list!")
+                    //var divContainer = document.getElementById("contactList");
+                    //divContainer.innerHTML = "No relative";
+                });
+
+                })
+            .fail(function(textStatus){
+                //console.log(textStatus.status);  /*prints error code (e.g. 404)*/
+                //console.log(textStatus);  /*prints the Object*/
+            });
         }
+
+    function clearForm(formId){
+    var form = document.getElementById(formId); 
+    form.reset();
+    }
+
+    function sendEmail(){
+        if(document.getElementById("form_message").value.trim().length==0){
+            document.getElementById("resultemail").innerHTML="Please type a valid message."
+        }
+        else{
+                $.ajax({
+                            type: "POST",
+                            url: '/sendemailtopatient',
+                            contentType:'application/json',
+                            data: JSON.stringify({email: document.getElementById("email").innerHTML,patientTaxCode:document.getElementById("taxcode").innerHTML, patientName:document.getElementById("name").innerHTML, patientSurname:document.getElementById("surname").innerHTML, text: document.getElementById("form_message").value, operationType: document.getElementById("category").innerHTML }),
+                            success: function(data){
+                                document.getElementById("resultemail").innerHTML="Email sent.";
+                            },
+                            error: function(data){
+                                document.getElementById("resultemail").innerHTML="ERROR: Email not sent.";  
+                            }
+
+                        })
+            }
+        
+    
+    }

@@ -1,10 +1,11 @@
 [   
-    {"specialty": "Mozzarella"},
-    {"specialty": "Pepperoni"},
-    {"specialty": "Cheese"},
-    {"specialty": "Bread"},
-    {"specialty": "Pizza"},
-    {"specialty": "Tortellini"},
-    {"specialty": "Onion"},
-    {"specialty": "Tomatoes"}
+    {"specialty": "Cardiology"},
+    {"specialty": "Cardiac Surgery"},
+    {"specialty": "Neurology"},
+    {"specialty": "Intensive Care"},
+    {"specialty": "Orthopaedics"},
+    {"specialty": "Pediatrics"},
+    {"specialty": "Traumatology"},
+    {"specialty": "Hematology"},
+    {"specialty": "Pulmonology"}
 ]

@@ -12,15 +12,15 @@
   <script src="/src/utility.js"></script>
 </head>
 
-<body>
+<body onload="clearForm('Registration_form');">
   <nav class="navbar navbar-expand-md bg-primary navbar-dark">
     <div class="container">
-      <a class="navbar-brand" href="#"><i class="fa d-inline fa-lg fa-briefcase"></i><b>&nbsp;FAHM<br></b></a>
+      <a class="navbar-brand" href="/"><i class="fa d-inline fa-lg fa-briefcase"></i><b>&nbsp;FAHM<br></b></a>
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar2SupportedContent" aria-controls="navbar2SupportedContent" aria-expanded="false"
         aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
       <div class="collapse navbar-collapse text-center justify-content-end" id="navbar2SupportedContent">
         <ul class="navbar-nav"></ul>
-        <a class="btn navbar-btn ml-2 text-white btn-secondary" data-toggle="modal" data-target="#LoginModal"><i class="fa d-inline fa-lg fa-user-circle-o"></i> Log in</a>
+        <a class="btn navbar-btn ml-2 text-white btn-secondary" style="cursor:pointer;" data-toggle="modal" data-target="#LoginModal" onclick="clearForm('loginForm');"><i class="fa d-inline fa-lg fa-user-circle-o"></i> Log in</a>
       </div>
     </div>
   </nav>
@@ -31,7 +31,7 @@
           <img class="img-fluid d-block mx-auto mb-5" src="steto.png"> </div>
         <div class="col-md-9 text-white align-self-center">
           <h1 class="mb-4 display-4">Fast Alert Health Monitoring</h1>
-          <p class="lead mb-5">Get a fluid web page working on all devices with the Bootstrap 4 grid system.&nbsp;
+          <p class="lead mb-5">
             <br> </p>
           <a href="#Registration_form" class="btn btn-lg mx-1 btn-light"><b>Sign up</b></a>
         </div>
@@ -58,8 +58,8 @@
                 <div class="form-group"> <label>Confirm password</label>
                   <input type="password" name="confirm_password" id="confirm_password" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="comparePwds()"> <label id="confirm_password_err" style="color:red; visibility:hidden"><b>These passwords don't match - </b> Try again?</label></div>
                 <div class="form-group"> <label>E-mail</label>
-                  <input type="email" name="email" id="email" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkMail();"> <label id="email_err" style="color:red;visibility:hidden"> <b>Please enter a valid email address - </b> Probably you are missing a @ sign</label> </div>               
-                </div>
+                  <input type="email" name="email" id="email" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkMail();"> <label id="email_err" style="color:red;visibility:hidden"> <b>Please enter a valid email address - </b> Probably you are missing a @ sign</label> </div>
+              </div>
               <div class="col-md-6">
                 <div class="row">
                   <div class="col-md-6">
@@ -82,7 +82,7 @@
                   </div>
                 </div>
                 <div class="form-group"> <label>Birthdate (use the format "yyyy-mm-dd")</label>
-                  <input type="text" placeholder="yyyy-mm-dd" name="birthdate" id="birthdate" class="form-control" required=""  onfocus="resetFieldError(this.id);" onblur="checkDate()"> <label id="birthdate_err" style="color:red;visibility:hidden"><b>Please enter a valid date - </b> You should use the format yyyy-mm-dd</label></div>
+                  <input type="text" placeholder="yyyy-mm-dd" name="birthdate" id="birthdate" class="form-control" required="" onfocus="resetFieldError(this.id);" onblur="checkDate()"> <label id="birthdate_err" style="color:red;visibility:hidden"><b>Please enter a valid date - </b> You should use the format yyyy-mm-dd</label></div>
                 <div class="form-group"> <label>Gender</label> <select name="gender" id="gender" class="form-control" required="">
   									<option value="M">M</option>
   										<option value="F">F</option>
@@ -97,7 +97,7 @@
       </div>
     </div>
   </div>
-  <div class="py-5 text-white bg-light">
+  <div class="py-5 text-white bg-white">
     <div class="container">
       <div class="row">
         <div class="col-md-9"> </div>
@@ -108,7 +108,7 @@
       <div class="row">
         <div class="col-md-6 mt-3 text-center">
           <img class="img-fluid d-block my-1 mx-auto py-3" src="Logo.jpg"> </div>
-        <div class="col-md-6 mt-3 text-center bg-light">
+        <div class="col-md-6 mt-3 text-center bg-white">
           <p class="lead text-center text-dark my-5" style="font-size:160%;"><b class="">More results with faster consultations.</b></p>
         </div>
       </div>
@@ -121,9 +121,9 @@
         </div>
         <div class="col-md-6">
           <div class="row">
-            <div class="col-md-4 bg-light"><i class="fa fa-fw fa-3x fa-heartbeat text-center text-dark mx-5 py-4"></i></div>
-            <div class="col-md-4 bg-light"><i class="fa fa-fw fa-3x fa-user-md mx-5 text-dark py-4"></i></div>
-            <div class="col-md-4 bg-light"><i class="fa fa-fw fa-3x fa-universal-access mx-5 text-dark py-4"></i></div>
+            <div class="col-md-4 bg-white"><i class="fa fa-fw fa-3x fa-heartbeat text-center text-dark mx-5 py-4"></i></div>
+            <div class="col-md-4 bg-white"><i class="fa fa-fw fa-3x fa-user-md mx-5 text-dark py-4"></i></div>
+            <div class="col-md-4 bg-white"><i class="fa fa-fw fa-3x fa-universal-access mx-5 text-dark py-4"></i></div>
           </div>
         </div>
       </div>
@@ -134,18 +134,18 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Sign in</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true" style="cursor:pointer;">×</span> </button>
         </div>
         <div class="modal-body">
-          <form class="" method="post" action="/login">
+          <form class="" method="post" action="/login" id="loginForm">
             <div class="form-group"> <label>Username</label>
               <input type="text" name="logusername" class="form-control" placeholder="Enter username"> </div>
             <div class="form-group"> <label>Password</label>
               <input type="password" name="logpassword" class="form-control" placeholder="Password"> </div>
             <!--<button class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#ErrorLoginModal">Login</button>-->
-            <button class="btn btn-primary my-2">Login</button>
+            <button class="btn btn-primary my-2" style="cursor:pointer;">Login</button>
             <div class="container text-right mx-2"> <i class="fa d-inline fa-lg fa-wrench mx-0"></i>
-              <a href="#" data-target="#AdminModal" data-toggle="modal" data-dismiss="modal">Are you the administrator?</a>
+              <a href="#" data-target="#AdminModal" data-toggle="modal" data-dismiss="modal" onclick="clearForm('adminForm');">Are you the administrator?</a>
             </div>
           </form>
         </div>
@@ -157,36 +157,19 @@
       <div class="modal-content" style="background-color:#C0C0C0;">
         <div class="modal-header">
           <h5 class="modal-title">Sign in</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true" style="cursor:pointer;">×</span> </button>
         </div>
         <div class="modal-body">
-          <form class="" method="post" action="/admin_login">
+          <form class="" method="post" action="/admin_login" id="adminForm">
             <div class="form-group"> <label>Username</label>
               <input type="text" name="adlogusername" class="form-control" placeholder="Enter username"> </div>
             <div class="form-group"> <label>Password</label>
               <input type="password" name="adlogpassword" class="form-control" placeholder="Password"> </div>
             <!--<button class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#ErrorLoginModal">Login</button>-->
             <div class="text-left">
-              <button class="btn btn-success my-2">Log in</button>
+              <button class="btn btn-success my-2" style="cursor:pointer;">Log in</button>
             </div>
           </form>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="modal" id="ErrorLoginModal">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">ERROR</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
-        </div>
-        <div class="modal-body">
-          <p>Please insert valid credentials.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#LoginModal">Back</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Home</button>
         </div>
       </div>
     </div>
@@ -195,15 +178,16 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">SUCCESS!</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="window.location.reload()"> <span aria-hidden="true">×</span> </button>
+          <h4 class="modal-title text-secondary">SUCCESS!</h4>
         </div>
         <div class="modal-body">
-          <p>The sign up procedure has been terminated: check inbox the confirmation e-mail.
-            <br>Press <i>Enter</i> button to log into the platform or simply close the modal.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal" data-target="#LoginModal" data-toggle="modal">Enter</button>
+          <div class="row">
+            <div class="col-md-9">
+              <p>The sign up procedure has been terminated: in your inbox you will find a welcome e-mail.
+                <br>Now you will be redirected to your private page.</p>
+            </div>
+            <div class="col-md-3"> <i class="fa d-inline fa-4x fa-user-plus text-secondary"></i></div>
+          </div>
         </div>
       </div>
     </div>

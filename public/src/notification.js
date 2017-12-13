@@ -14,7 +14,7 @@ socket.on('notification', function (data) {
 
 function notifyMe(obj) {
   var options = {
-    body: obj.event.metaData["timestamp"],
+    body: new Date(obj.event.metaData["timestamp"]).toLocaleDateString("en-US",{day:"numeric", month:"short", year:"numeric", minute:"numeric", hour:"numeric"}),
     icon: "../exclamation.png"
 }
 
@@ -40,7 +40,13 @@ switch(obj.event.metaData["operation_type"]) {
     // Let's check whether notification permissions have already been granted
     else if (Notification.permission === "granted") {
       // If it's okay let's create a notification
-      var notification = new Notification("New event from " + getParameterByName('name', obj.event.metaData["id_utente"]) + " " + getParameterByName('surname', obj.event.metaData["id_utente"]), options);
+      var notification = new Notification("New event from " + capitalizeFirstLetter(getParameterByName('name', obj.event.metaData["id_utente"])) + " " + capitalizeFirstLetter(getParameterByName('surname', obj.event.metaData["id_utente"])), options);
+      
+      notification.addEventListener('click', function() {
+        populateEventModalNotification(obj);
+        
+    })
+      //notification.on("click",populateEventModal);
     }
 
     // Otherwise, we need to ask the user for permission
@@ -48,7 +54,10 @@ switch(obj.event.metaData["operation_type"]) {
       Notification.requestPermission(function (permission) {
         // If the user accepts, let's create a notification
         if (permission === "granted") {
-          var notification = new Notification("New event from " + getParameterByName('name', obj.event.metaData["id_utente"]) + " " + getParameterByName('surname', obj.event.metaData["id_utente"]), options);          //var notification = new Notification("New event from " + obj.event.metaData["id_utente"], options);
+          var notification = new Notification("New event from " + capitalizeFirstLetter(getParameterByName('name', obj.event.metaData["id_utente"])) + " " + capitalizeFirstLetter(getParameterByName('surname', obj.event.metaData["id_utente"])), options);          //var notification = new Notification("New event from " + obj.event.metaData["id_utente"], options);
+          notification.addEventListener('click', function() {
+            populateEventModalNotification(obj);
+          })
         }
       });
     }
@@ -67,4 +76,8 @@ function getParameterByName(parameterName, fullID) {
   if (!results) return null;
   if (!results[2]) return '';
   return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }

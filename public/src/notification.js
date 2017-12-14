@@ -1,5 +1,6 @@
 //var socket = io.connect('http://localhost:8002');
-var socket = io.connect('https://fahm.herokuapp.com:5000', {secure: true});
+//var socket = io.connect('https://fahm.herokuapp.com:5000', {secure: true});
+var socket = io.connect(window.location.hostname);
 
 socket.on('connect', function (data) {
     // convert the json string into a valid javascript object

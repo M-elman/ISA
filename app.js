@@ -15,7 +15,7 @@ var port = process.env.PORT || 5000;
 
 
 
-server.listen(process.env.PORT);
+server.listen(PORT);
 io.sockets.on('connection', function(socket){
   socket.on('storeClientInfo', function (data) {
       var clientInfo = new Object();

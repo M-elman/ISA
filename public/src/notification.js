@@ -1,6 +1,6 @@
 //var socket = io.connect('http://localhost:8002');
 //var socket = io.connect('wss://fahm.herokuapp.com');
-var socket = io.connect(window.location.hostname + ":8002");
+var socket = io.connect("wss://" + window.location.hostname + ":8002");
 
 
 

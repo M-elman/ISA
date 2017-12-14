@@ -7,12 +7,13 @@ var MongoStore = require('connect-mongo')(session);
 var Event = require('./models/event_alertSchema');
 var amqp = require('amqplib');
 var mongoDbQueue = require('mongodb-queue');
-//var server = require('http').Server(app);
-var server = require('https').Server(app);
+var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
 var clients =[];
 var port = process.env.PORT || 5000;
+
+
 
 server.listen(8002);
 io.sockets.on('connection', function(socket){
@@ -92,8 +93,6 @@ app.use(function (err, req, res, next) {
 
 // listen on port 1337
 app.listen(port, function () {
-//app.listen(1337, function () {
-
   console.log('Express app listening on port ' + port);
 
  

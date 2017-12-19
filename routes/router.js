@@ -147,7 +147,7 @@ var mailOptions = {
   from: 'fastalert.healthmonitoring@gmail.com',
   to: req.body.email,
   subject: 'Welcome to FAHM',
-  text: 'Bienvenu!'
+  text: 'Welcome ' + userdata.name + " " + userdata.surname + '! The registration procedure is completed. '
 };
 
 transporter.sendMail(mailOptions, function(error, info){
@@ -218,7 +218,7 @@ router.post('/register', function (req, res, next) {
     from: 'fastalert.healthmonitoring@gmail.com',
     to: req.body.email,
     subject: 'Welcome to FAHM',
-    text: 'Bienvenu doctor!'
+    text: 'Welcome Doctor ' + userdata.name + " " + userdata.surname + '! The registration procedure is completed. '
   };
   
   transporter.sendMail(mailOptions, function(error, info){
@@ -276,7 +276,7 @@ router.post('/addrelative', function (req, res, next) {
         from: 'fastalert.healthmonitoring@gmail.com',
         to: req.body.relativeMail,
         subject: 'Welcome to FAHM',
-        text: 'Bienvenu ' + relativeData.name + " " + relativeData.surname + "! Your relative " + relativeData.patientName + " " + relativeData.patientSurname + " has just registered you as his/her ICE contact in our fantastic application! Congratulations!"
+        text: 'Welcome ' + relativeData.name + " " + relativeData.surname + "! Your relative " + relativeData.patientName + " " + relativeData.patientSurname + " has just registered you as his/her ICE contact on our platform!"
       };
       
       transporter.sendMail(mailOptions, function(error, info){

@@ -630,7 +630,6 @@ function showDoctorProfile(){
     
         var doctorSurname=document.getElementById('welcome_label_doctor').innerHTML.substring(15, document.getElementById('welcome_label_doctor').innerHTML.indexOf('!'));
         doctorSurname=doctorSurname.charAt(0).toLowerCase()+doctorSurname.slice(1);
-        console.log(doctorSurname);
 
         $.ajax({
             type: "GET",
@@ -650,7 +649,6 @@ function showDoctorProfile(){
             })
             .done(function(data, textStatus, xhr){
                 //data contains the doctor profile provided by the server*/
-                console.log(data);
                 if(data["gender"]=="M"){
                     document.getElementById("nameSurnameValProfile").innerHTML="Dott. " + data["name"].charAt(0).toUpperCase() + data["name"].slice(1) + " " + data["surname"].charAt(0).toUpperCase() + data["surname"].slice(1);
                     
